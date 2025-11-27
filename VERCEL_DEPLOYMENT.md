@@ -10,11 +10,11 @@
 ### Update Email for Form Submissions
 1. Open `src/config/site.ts`
 2. Update `formSubmitEmail` with your actual email address:
-   ```typescript
+   \`\`\`typescript
    contact: {
        formSubmitEmail: "your-actual-email@example.com",
    }
-   ```
+   \`\`\`
 
 ### Verify Database Configuration
 The Prisma schema is already configured for PostgreSQL. No changes needed!
@@ -24,11 +24,11 @@ The Prisma schema is already configured for PostgreSQL. No changes needed!
 ### Option A: Via Vercel Dashboard (Recommended)
 
 1. **Push to GitHub**
-   ```bash
+   \`\`\`bash
    git add .
    git commit -m "Ready for Vercel deployment"
    git push origin main
-   ```
+   \`\`\`
 
 2. **Import to Vercel**
    - Go to [vercel.com](https://vercel.com)
@@ -62,7 +62,7 @@ The Prisma schema is already configured for PostgreSQL. No changes needed!
 
 ### Option B: Via Vercel CLI
 
-```bash
+\`\`\`bash
 # Install Vercel CLI
 npm i -g vercel
 
@@ -82,7 +82,7 @@ vercel
 
 # Deploy to production
 vercel --prod
-```
+\`\`\`
 
 ## Step 3: Run Database Migration
 
@@ -92,19 +92,19 @@ After deployment with database connected:
    - Go to your project
    - Click "Settings" → "Functions"
    - Add build command override:
-     ```bash
+     \`\`\`bash
      prisma generate && prisma migrate deploy && next build
-     ```
+     \`\`\`
    - Redeploy
 
 2. **Or manually via CLI**
-   ```bash
+   \`\`\`bash
    # Set DATABASE_URL from Vercel dashboard
    export DATABASE_URL="your-postgres-url-from-vercel"
    
    # Run migration
    npx prisma migrate deploy
-   ```
+   \`\`\`
 
 ## Step 4: Verify Deployment
 
@@ -138,10 +138,10 @@ After deployment with database connected:
 For each new ward site:
 
 1. **Clone the repository**
-   ```bash
+   \`\`\`bash
    git clone https://github.com/your-username/ne-philly-63rd-ward.git new-ward-name
    cd new-ward-name
-   ```
+   \`\`\`
 
 2. **Update configuration**
    - Edit `src/config/site.ts`:
@@ -150,10 +150,10 @@ For each new ward site:
      - Update `hero`, `mission`, `priorities`, `values`
 
 3. **Create new GitHub repo**
-   ```bash
+   \`\`\`bash
    git remote set-url origin https://github.com/your-username/new-ward-name.git
    git push -u origin main
-   ```
+   \`\`\`
 
 4. **Deploy to Vercel**
    - Import new GitHub repo to Vercel

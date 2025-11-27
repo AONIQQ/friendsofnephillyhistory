@@ -1,29 +1,26 @@
-import { Section } from "@/components/Section";
-import { SignUpForm } from "@/components/SignUpForm";
-import { siteConfig } from "@/config/site";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
+import { SignUpForm } from "@/components/SignUpForm"
+import { siteConfig } from "@/config/site"
 
 export default function JoinPage() {
-    return (
-        <div className="min-h-screen bg-slate-50 flex flex-col">
-            <Header />
-            <main className="flex-grow pt-24">
-                <div className="page-stack">
-                    <Section className="py-12 sm:py-16">
-                        <div className="mx-auto max-w-xl bg-white p-8 shadow-xl rounded-2xl ring-1 ring-gray-900/5 hof-text-stack">
-                            <div className="text-center hof-text-stack">
-                                <h1 className="text-3xl font-bold tracking-tight text-gray-900 font-heading">Join {siteConfig.name}</h1>
-                                <p className="text-lg text-gray-600">
-                                    Sign up to receive updates, volunteer opportunities, and help us build a better {siteConfig.location}.
-                                </p>
-                            </div>
-                            <SignUpForm />
-                        </div>
-                    </Section>
-                </div>
-            </main>
-            <Footer />
+  return (
+    <>
+      {/* Hero Section */}
+      <section className="bg-[var(--navy)] pt-12 pb-16 md:pt-16 md:pb-20">
+        <div className="hof-container flex flex-col items-center text-center">
+          <h1 className="text-4xl md:text-5xl font-bold text-white font-serif mb-4">Join Our Community</h1>
+          <p className="text-xl text-white/80 max-w-2xl">
+            Sign up to receive updates, volunteer opportunities, and help us build a better {siteConfig.location}.
+          </p>
         </div>
-    );
+      </section>
+
+      <section className="py-16 md:py-20 bg-[var(--white-soft)]">
+        <div className="hof-container flex flex-col items-center">
+          <div className="max-w-xl w-full bg-white p-8 md:p-10 rounded-xl border border-[var(--navy)]/10">
+            <SignUpForm />
+          </div>
+        </div>
+      </section>
+    </>
+  )
 }

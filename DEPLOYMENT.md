@@ -27,25 +27,25 @@ For production deployment on Vercel, you need to switch from SQLite to a serverl
 **Setup Steps:**
 
 1. **Add Vercel Postgres to your project:**
-   ```bash
+   \`\`\`bash
    # In Vercel dashboard:
    # Project Settings → Storage → Create Database → Postgres
-   ```
+   \`\`\`
 
 2. **Vercel automatically adds these environment variables:**
-   ```
+   \`\`\`
    POSTGRES_URL
    POSTGRES_PRISMA_URL  # Use this one for Prisma
    POSTGRES_URL_NON_POOLING
-   ```
+   \`\`\`
 
 3. **Update `prisma/schema.prisma` for production:**
-   ```prisma
+   \`\`\`prisma
    datasource db {
      provider = "postgresql"  // Changed from "sqlite"
      url      = env("DATABASE_URL")
    }
-   ```
+   \`\`\`
 
 4. **Set DATABASE_URL in Vercel:**
    - Go to Project Settings → Environment Variables
@@ -54,13 +54,13 @@ For production deployment on Vercel, you need to switch from SQLite to a serverl
 
 5. **Run migration on deployment:**
    Add to `package.json`:
-   ```json
+   \`\`\`json
    {
      "scripts": {
        "build": "prisma generate && prisma migrate deploy && next build"
      }
    }
-   ```
+   \`\`\`
 
 ### Alternative: Neon (Also Free & Easy)
 
@@ -79,9 +79,9 @@ For production deployment on Vercel, you need to switch from SQLite to a serverl
 3. **Copy the connection string** from dashboard
 
 4. **Add to Vercel environment variables:**
-   ```
+   \`\`\`
    DATABASE_URL=postgresql://user:password@ep-xxx.us-east-2.aws.neon.tech/neondb?sslmode=require
-   ```
+   \`\`\`
 
 5. **Update schema** (same as Vercel Postgres above)
 
@@ -129,13 +129,13 @@ For production deployment on Vercel, you need to switch from SQLite to a serverl
 
 ## Environment Variables
 
-```bash
+\`\`\`bash
 # Production (Vercel)
 DATABASE_URL=${POSTGRES_PRISMA_URL}  # Auto-set by Vercel Postgres
 
 # Or if using Neon:
 DATABASE_URL=postgresql://user:pass@host.neon.tech/db?sslmode=require
-```
+\`\`\`
 
 ## Troubleshooting
 
