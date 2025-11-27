@@ -1,0 +1,125 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("POSTGRES_PRISMA_URL")
+  directUrl = env("POSTGRES_URL_NON_POOLING")
+}
+
+model Event {
+  id          String   @id @default(cuid())
+  title       String
+  date        String
+  time        String
+  location    String
+  description String
+  month       String
+  day         String
+  eventType   String   @default("ceremony")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Inductee {
+  id            String   @id @default(cuid())
+  name          String
+  years         String
+  category      String
+  inductionYear Int
+  shortBio      String
+  fullBio       String
+  achievements  String
+  imageUrl      String?
+  wikipediaUrl  String?
+  isPublished   Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model GalleryImage {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  imageUrl    String
+  year        Int?
+  category    String
+  tags        String?
+  isPublished Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Nomination {
+  id              String   @id @default(cuid())
+  nomineeName     String
+  nomineeCategory String
+  nomineeYears    String?
+  nominatorName   String
+  nominatorEmail  String
+  nominatorPhone  String?
+  nominatorRelation String?
+  shortDescription String
+  achievements     String
+  significance     String
+  supportingInfo   String?
+  status          String   @default("pending")
+  reviewNotes     String?
+  reviewedBy      String?
+  reviewedAt      DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model Subscriber {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Donation {
+  id            String   @id @default(cuid())
+  amount        Float
+  donorName     String?
+  donorEmail    String?
+  isAnonymous   Boolean  @default(false)
+  message       String?
+  isRecurring   Boolean  @default(false)
+  status        String   @default("completed")
+  transactionId String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model ContactSubmission {
+  id          String   @id @default(cuid())
+  name        String
+  email       String
+  phone       String?
+  inquiryType String   @default("general") // volunteer, host_event, partnership, general
+  subject     String
+  message     String
+  status      String   @default("new")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model AdminUser {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String
+  role         String   @default("editor")
+  isActive     Boolean  @default(true)
+  lastLogin    DateTime?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
