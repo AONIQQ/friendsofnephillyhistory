@@ -19,28 +19,48 @@ function loadEnvFiles() {
   }
 }
 
-function ensureDirectUrl(env) {
-  if (env.POSTGRES_URL_NON_POOLING && env.POSTGRES_URL_NON_POOLING.trim().length > 0) {
-    return env.POSTGRES_URL_NON_POOLING
+function ensurePrismaUrl(env) {
+  if (env.PRISMA_DATABASE_URL && env.PRISMA_DATABASE_URL.trim().length > 0) {
+    return env.PRISMA_DATABASE_URL
   }
 
   const fallback =
     env.POSTGRES_PRISMA_URL ||
-    env.POSTGRES_URL ||
     env.DATABASE_URL
 
   if (!fallback) {
     throw new Error(
-      "Set POSTGRES_PRISMA_URL (or POSTGRES_URL / DATABASE_URL) so we can derive POSTGRES_URL_NON_POOLING."
+      "Set PRISMA_DATABASE_URL (or POSTGRES_PRISMA_URL / DATABASE_URL) so Prisma can connect."
     )
   }
 
-  console.log(
-    "POSTGRES_URL_NON_POOLING not found. Falling back to available Postgres URL for direct connection."
-  )
+  console.log("PRISMA_DATABASE_URL not found. Falling back to available Prisma URL.")
 
-  env.POSTGRES_URL_NON_POOLING = fallback
-  return env.POSTGRES_URL_NON_POOLING
+  env.PRISMA_DATABASE_URL = fallback
+  return env.PRISMA_DATABASE_URL
+}
+
+function ensureDirectUrl(env) {
+  if (env.POSTGRES_URL && env.POSTGRES_URL.trim().length > 0) {
+    return env.POSTGRES_URL
+  }
+
+  const fallback =
+    env.POSTGRES_URL_NON_POOLING ||
+    env.DATABASE_URL ||
+    env.PRISMA_DATABASE_URL ||
+    env.POSTGRES_PRISMA_URL
+
+  if (!fallback) {
+    throw new Error(
+      "Set POSTGRES_URL (or POSTGRES_URL_NON_POOLING / DATABASE_URL) so we can derive a direct connection."
+    )
+  }
+
+  console.log("POSTGRES_URL not found. Falling back to available Postgres URL for direct connection.")
+
+  env.POSTGRES_URL = fallback
+  return env.POSTGRES_URL
 }
 
 function runPrismaDbPush() {
@@ -49,6 +69,7 @@ function runPrismaDbPush() {
   const env = { ...process.env }
 
   try {
+    ensurePrismaUrl(env)
     ensureDirectUrl(env)
   } catch (error) {
     console.error(error.message)

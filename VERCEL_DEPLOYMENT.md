@@ -41,13 +41,13 @@ The Prisma schema is already configured for PostgreSQL. No changes needed!
    - Click "Create Database"
    - Select "Postgres"
    - Click "Create"
-   - Vercel automatically adds the Postgres environment variables (`POSTGRES_URL`, `POSTGRES_PRISMA_URL`, `POSTGRES_URL_NON_POOLING`)
+   - Vercel automatically adds the Postgres environment variables (`POSTGRES_URL`, `PRISMA_DATABASE_URL`)
 
 4. **Connect Database to Project**
    - Go to "Settings" → "Environment Variables"
    - Add new variable:
      - Name: `DATABASE_URL`
-     - Value: Click "Insert" → Select `POSTGRES_PRISMA_URL`
+     - Value: Click "Insert" → Select `PRISMA_DATABASE_URL`
    - Click "Save"
 
 5. **Redeploy to Apply Database**
@@ -164,11 +164,11 @@ For each new ward site:
 
 | Variable | Value | Where to Set |
 |----------|-------|--------------|
-| `POSTGRES_PRISMA_URL` | Provided by Vercel Postgres (`vercel env pull` copies it locally) | Created automatically when Postgres is provisioned |
-| `POSTGRES_URL_NON_POOLING` | Direct connection string from Vercel Postgres | Created automatically (local builds fall back to `POSTGRES_PRISMA_URL` if this is missing) |
-| `DATABASE_URL` | `${POSTGRES_PRISMA_URL}` | Vercel Dashboard → Settings → Environment Variables |
+| `PRISMA_DATABASE_URL` | Provided by Vercel Postgres (`vercel env pull` copies it locally) | Created automatically when Postgres is provisioned |
+| `POSTGRES_URL` | Direct connection string from Vercel Postgres | Created automatically; local builds fall back to anything available |
+| `DATABASE_URL` | `${PRISMA_DATABASE_URL}` | Vercel Dashboard → Settings → Environment Variables |
 
-> **Tip:** Run `vercel env pull` before `npm run build` locally so both Postgres URLs are populated. The build script now sets `POSTGRES_URL_NON_POOLING` to `POSTGRES_PRISMA_URL` automatically when it is absent, which keeps Prisma happy during CI/CD.
+> **Tip:** Run `vercel env pull` before `npm run build` locally so both `PRISMA_DATABASE_URL` and `POSTGRES_URL` exist. The build script now auto-fills whichever one is missing to keep Prisma happy during CI/CD.
 
 ## Troubleshooting
 
