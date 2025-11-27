@@ -1,0 +1,131 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Event {
+  id          String   @id @default(cuid())
+  title       String
+  date        String   // Display date string e.g. "March 15, 2024"
+  time        String
+  location    String
+  description String
+  month       String   // Abbreviated month e.g. "MAR"
+  day         String   // Day number e.g. "15"
+  eventType   String   @default("ceremony") // ceremony, meeting, community
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Inductee {
+  id            String   @id @default(cuid())
+  name          String
+  years         String   // e.g. "1624-1695" or "Born 1961"
+  category      String   // Individual, Organization, Historic Church, Posthumous
+  inductionYear Int
+  shortBio      String
+  fullBio       String
+  achievements  String   // JSON array stored as text
+  imageUrl      String?
+  wikipediaUrl  String?
+  isPublished   Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model GalleryImage {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  imageUrl    String
+  year        Int?     // Year the photo was taken
+  category    String   // ceremony, inductee, historic, community
+  tags        String?  // JSON array stored as text
+  isPublished Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Nomination {
+  id              String   @id @default(cuid())
+  // Nominee Information
+  nomineeName     String
+  nomineeCategory String   // Individual, Organization, Historic Site
+  nomineeYears    String?  // Birth/death years or founding date
+  
+  // Nominator Information
+  nominatorName   String
+  nominatorEmail  String
+  nominatorPhone  String?
+  nominatorRelation String? // Relationship to nominee
+  
+  // Nomination Details
+  shortDescription String
+  achievements     String
+  significance     String   // Why they should be inducted
+  supportingInfo   String?  // Additional supporting information
+  
+  // Status
+  status          String   @default("pending") // pending, reviewing, approved, rejected
+  reviewNotes     String?
+  reviewedBy      String?
+  reviewedAt      DateTime?
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model Subscriber {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Donation {
+  id            String   @id @default(cuid())
+  amount        Float
+  donorName     String?
+  donorEmail    String?
+  isAnonymous   Boolean  @default(false)
+  message       String?
+  isRecurring   Boolean  @default(false)
+  status        String   @default("completed") // pending, completed, failed
+  transactionId String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model ContactSubmission {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  phone     String?
+  subject   String
+  message   String
+  status    String   @default("new") // new, read, replied, archived
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model AdminUser {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String
+  role         String   @default("editor") // admin, editor, viewer
+  isActive     Boolean  @default(true)
+  lastLogin    DateTime?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}

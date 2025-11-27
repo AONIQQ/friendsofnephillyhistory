@@ -1,0 +1,24 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Event {
+  id          String   @id @default(cuid())
+  title       String
+  date        String   // Display date string e.g. "March 15, 2024"
+  time        String
+  location    String
+  description String
+  month       String   // Abbreviated month e.g. "MAR"
+  day         String   // Day number e.g. "15"
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}

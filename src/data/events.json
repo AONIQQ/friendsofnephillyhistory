@@ -1,0 +1,28 @@
+[
+  {
+    "id": 1,
+    "title": "Community Cleanup",
+    "date": "2025-12-05",
+    "time": "9:00 AM - 12:00 PM",
+    "location": "Pennypack Park Entrance",
+    "description": "Join us for our monthly community cleanup event. Gloves and bags provided."
+  },
+  {
+    "id": 2,
+    "title": "Ward Meeting",
+    "date": "2025-12-12",
+    "time": "7:00 PM - 8:30 PM",
+    "location": "Northeast Regional Library",
+    "description": "Monthly ward meeting to discuss community safety and upcoming initiatives."
+  },
+  {
+    "id": "1764127852490",
+    "title": "Test Event",
+    "date": "April 1, 2024",
+    "time": "6:00 PM",
+    "location": "Ward Hall",
+    "description": "Test description",
+    "month": "APR",
+    "day": "01"
+  }
+]
