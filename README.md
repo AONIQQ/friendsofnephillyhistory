@@ -4,14 +4,14 @@
 
 ### Automated Deployment (Recommended)
 
-```bash
+\`\`\`bash
 # Clone the repository
 git clone https://github.com/AONIQQ/63rdward.git new-ward-name
 cd new-ward-name
 
 # Run the automated deployment script
 ./deploy-ward.sh
-```
+\`\`\`
 
 The script will:
 1. ✅ Prompt for ward information
@@ -41,7 +41,7 @@ Choose from pre-configured themes or create your own in `src/config/theme.ts`:
 
 Edit `src/config/theme.ts`:
 
-```typescript
+\`\`\`typescript
 export const themeConfig = {
   primary: {
     hue: 220,        // 0-360: Color wheel position
@@ -54,7 +54,7 @@ export const themeConfig = {
     lightness: 50,
   },
 };
-```
+\`\`\`
 
 Changes apply site-wide automatically!
 
@@ -68,10 +68,10 @@ Changes apply site-wide automatically!
 
 ## Local Development
 
-```bash
+\`\`\`bash
 npm install
 npm run dev
-```
+\`\`\`
 
 Visit http://localhost:3000
 
@@ -97,7 +97,7 @@ Visit http://localhost:3000
 
 ## Quick Commands
 
-```bash
+\`\`\`bash
 # Deploy to production
 vercel --prod
 
@@ -109,7 +109,7 @@ DATABASE_URL="your-url" npx prisma db push
 
 # View logs
 vercel logs
-```
+\`\`\`
 
 ## Estimated Time
 

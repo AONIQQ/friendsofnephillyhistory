@@ -1,47 +1,47 @@
-"use client";
+"use client"
 
-import { siteConfig } from "@/config/site";
-import Link from "next/link";
+import { siteConfig } from "@/config/site"
+import Link from "next/link"
 
 export function Hero() {
-    return (
-        <div className="relative min-h-[80vh] flex items-center justify-center bg-gradient-to-br from-slate-900 via-blue-900 to-slate-800 overflow-hidden">
-            {/* Decorative Background Pattern */}
-            <div className="absolute inset-0 opacity-10 pointer-events-none">
-                <div className="absolute inset-0" style={{
-                    backgroundImage: `radial-gradient(circle at 2px 2px, rgba(255, 255, 255, 0.15) 1px, transparent 0)`,
-                    backgroundSize: '40px 40px'
-                }} />
-            </div>
+  return (
+    <section className="relative min-h-[85vh] flex items-center justify-center bg-[var(--navy)] overflow-hidden">
+      {/* Subtle pattern overlay */}
+      <div className="absolute inset-0 opacity-5 pointer-events-none">
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage: `radial-gradient(circle at 2px 2px, rgba(255, 255, 255, 0.3) 1px, transparent 0)`,
+            backgroundSize: "48px 48px",
+          }}
+        />
+      </div>
 
-            <div className="relative mx-auto max-w-7xl px-6 py-24 sm:py-32 lg:px-8 lg:py-40 text-center z-10">
-                {/* Decorative Element */}
-                <div className="mx-auto mb-8 h-1 w-20 bg-amber-500 rounded-full" />
+      {/* Gold accent line at top */}
+      <div className="absolute top-0 left-0 right-0 h-1 bg-[var(--gold)]" />
 
-                <h1 className="text-4xl font-bold tracking-tight text-white sm:text-6xl lg:text-7xl mb-6 drop-shadow-lg font-serif">
-                    {siteConfig.hero.title}
-                </h1>
+      <div className="relative w-full py-24 md:py-32 z-10">
+        <div className="flex flex-col items-center justify-center text-center px-6 md:px-8">
+          {/* Decorative gold bar - now properly centered */}
+          <div className="h-1 w-16 bg-[var(--gold)] rounded-full mb-8" />
 
-                <p className="mt-6 text-lg sm:text-xl leading-8 text-blue-100 font-light max-w-2xl mx-auto drop-shadow-md">
-                    {siteConfig.hero.subtitle}
-                </p>
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-white mb-6 font-serif max-w-4xl leading-tight">
+            {siteConfig.hero.title}
+          </h1>
 
-                <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 w-full">
-                    <Link
-                        href="/nominate"
-                        className="bg-amber-500 text-slate-900 hover:bg-amber-400 px-8 py-4 rounded-full font-bold text-lg transition-all shadow-lg hover:shadow-xl hover:-translate-y-1 whitespace-nowrap min-w-[200px] text-center"
-                    >
-                        {siteConfig.hero.cta}
-                    </Link>
-                    <Link
-                        href="/inductees"
-                        className="bg-transparent text-white border-2 border-white/30 hover:bg-white hover:text-slate-900 px-8 py-4 rounded-full font-bold text-lg transition-all shadow-lg hover:shadow-xl hover:-translate-y-1 flex items-center justify-center gap-2 whitespace-nowrap min-w-[200px]"
-                    >
-                        Meet Inductees
-                        <span aria-hidden="true">→</span>
-                    </Link>
-                </div>
-            </div>
+          <p className="mt-6 text-lg sm:text-xl leading-relaxed text-white/80 max-w-2xl">{siteConfig.hero.subtitle}</p>
+
+          <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+            <Link href="/inductees" className="hof-btn hof-btn-gold w-full sm:w-auto text-lg">
+              {siteConfig.hero.cta}
+            </Link>
+            <Link href="/nominate" className="hof-btn hof-btn-outline-white w-full sm:w-auto text-lg">
+              Nominate Someone
+              <span aria-hidden="true">→</span>
+            </Link>
+          </div>
         </div>
-    );
+      </div>
+    </section>
+  )
 }

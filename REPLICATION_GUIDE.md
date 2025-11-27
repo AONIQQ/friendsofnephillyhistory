@@ -9,20 +9,20 @@ This guide documents the exact process to replicate this website for other ward 
 
 ## Step 1: Clone and Customize
 
-```bash
+\`\`\`bash
 # Clone the repository
 git clone https://github.com/AONIQQ/63rdward.git new-ward-name
 cd new-ward-name
 
 # Install dependencies
 npm install
-```
+\`\`\`
 
 ## Step 2: Update Configuration
 
 Edit `src/config/site.ts`:
 
-```typescript
+\`\`\`typescript
 export const siteConfig = {
     name: "YOUR_WARD_NAME",  // e.g., "45th Ward"
     location: "YOUR_LOCATION",  // e.g., "South Philadelphia"
@@ -35,11 +35,11 @@ export const siteConfig = {
     },
     // Update hero, mission, priorities, values sections...
 }
-```
+\`\`\`
 
 ## Step 3: Create New GitHub Repository
 
-```bash
+\`\`\`bash
 # Remove old git history
 rm -rf .git
 
@@ -52,11 +52,11 @@ git commit -m "Initial commit: [Ward Name] website"
 git remote add origin https://github.com/YOUR_USERNAME/YOUR_REPO_NAME.git
 git branch -M main
 git push -u origin main
-```
+\`\`\`
 
 ## Step 4: Deploy to Vercel via CLI
 
-```bash
+\`\`\`bash
 # Install Vercel CLI (if not already installed)
 npm i -g vercel
 
@@ -69,7 +69,7 @@ vercel link --yes
 
 # Deploy to production
 vercel --prod
-```
+\`\`\`
 
 **Note**: The first deployment will fail because the database isn't connected yet. This is expected.
 
@@ -99,29 +99,29 @@ Vercel automatically creates these variables:
 
 ## Step 6: Pull Database Configuration Locally
 
-```bash
+\`\`\`bash
 # Pull environment variables from Vercel
 vercel env pull .env.development.local
 
 # This creates a local file with your database credentials
-```
+\`\`\`
 
 ## Step 7: Initialize Database Schema
 
-```bash
+\`\`\`bash
 # Use the PRISMA_DATABASE_URL from .env.development.local
 # Replace with your actual URL from the file
 DATABASE_URL="prisma+postgres://accelerate.prisma-data.net/?api_key=YOUR_API_KEY" npx prisma db push
-```
+\`\`\`
 
 You should see:
-```
+\`\`\`
 🚀  Your database is now in sync with your Prisma schema.
-```
+\`\`\`
 
 ## Step 8: Deploy with Database
 
-```bash
+\`\`\`bash
 # Commit any changes
 git add .
 git commit -m "Configure for [Ward Name]"
@@ -129,7 +129,7 @@ git push
 
 # Deploy to production
 vercel --prod
-```
+\`\`\`
 
 This time the build should succeed!
 
@@ -201,7 +201,7 @@ Visit: `https://your-project.vercel.app`
 
 ## Quick Reference Commands
 
-```bash
+\`\`\`bash
 # Local development
 npm run dev
 
@@ -219,7 +219,7 @@ vercel ls
 
 # Push database schema
 DATABASE_URL="your-url" npx prisma db push
-```
+\`\`\`
 
 ## What Gets Replicated
 
