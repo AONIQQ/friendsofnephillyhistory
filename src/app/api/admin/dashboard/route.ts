@@ -10,28 +10,13 @@ export async function GET() {
             totalInductees,
             pendingNominations,
             upcomingEvents,
-            totalDonationsResult,
-            subscribers,
             galleryImages,
             recentNominations,
-            recentEvents,
-            recentDonations
+            recentEvents
         ] = await Promise.all([
             db.inductee.count(),
             db.nomination.count({ where: { status: "pending" } }),
-            db.event.count({
-                where: {
-                    // Simple check for future events could be improved with actual date comparison
-                    // For now, we'll just count all events as "upcoming" logic might be complex with string dates
-                    // or just count all for the stat
-                }
-            }),
-            db.donation.aggregate({
-                _sum: {
-                    amount: true
-                }
-            }),
-            db.subscriber.count({ where: { isActive: true } }),
+            db.event.count(),
             db.galleryImage.count(),
             db.nomination.findMany({
                 take: 5,
@@ -45,10 +30,6 @@ export async function GET() {
                 }
             }),
             db.event.findMany({
-                take: 3,
-                orderBy: { createdAt: "desc" }
-            }),
-            db.donation.findMany({
                 take: 3,
                 orderBy: { createdAt: "desc" }
             })
@@ -67,27 +48,19 @@ export async function GET() {
                 detail: e.title,
                 time: e.createdAt,
                 type: "event"
-            })),
-            ...recentDonations.map(d => ({
-                action: "Donation received",
-                detail: `$${d.amount} from ${d.isAnonymous ? "Anonymous" : d.donorName || "Donor"}`,
-                time: d.createdAt,
-                type: "donation"
             }))
         ]
             .sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime())
-            .slice(0, 5) // Keep top 5 most recent activities
+            .slice(0, 5)
             .map(item => ({
                 ...item,
-                time: new Date(item.time).toLocaleDateString() // Simple formatting
+                time: new Date(item.time).toLocaleDateString()
             }));
 
         const stats = {
             totalInductees,
             pendingNominations,
-            upcomingEvents, // Using total count for now as date parsing might be tricky with string dates
-            totalDonations: totalDonationsResult._sum.amount || 0,
-            subscribers,
+            upcomingEvents,
             galleryImages,
             recentNominations: recentNominations.map(n => ({
                 id: n.id,

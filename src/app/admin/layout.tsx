@@ -9,10 +9,8 @@ const adminNav = [
     { name: "Inductees", href: "/admin/inductees", icon: "users" },
     { name: "Nominations", href: "/admin/nominations", icon: "star" },
     { name: "Events", href: "/admin/events", icon: "calendar" },
+    { name: "Contact", href: "/admin/contact", icon: "inbox" },
     { name: "Gallery", href: "/admin/gallery", icon: "image" },
-    { name: "Voting", href: "/admin/voting", icon: "vote" },
-    { name: "Subscribers", href: "/admin/subscribers", icon: "mail" },
-    { name: "Donations", href: "/admin/donations", icon: "dollar" },
 ];
 
 const icons: Record<string, React.ReactNode> = {
@@ -56,6 +54,11 @@ const icons: Record<string, React.ReactNode> = {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
     ),
+    inbox: (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+        </svg>
+    ),
 };
 
 export default function AdminLayout({
@@ -96,17 +99,16 @@ export default function AdminLayout({
                 <aside className="w-full lg:w-64 bg-white shadow-lg lg:min-h-[calc(100vh-4rem)] border-b lg:border-b-0 lg:border-r z-40">
                     <nav className="p-4 space-y-1 flex lg:block overflow-x-auto lg:overflow-visible gap-2 lg:gap-0">
                         {adminNav.map((item) => {
-                            const isActive = pathname === item.href || 
+                            const isActive = pathname === item.href ||
                                 (item.href !== "/admin" && pathname?.startsWith(item.href));
                             return (
                                 <Link
                                     key={item.name}
                                     href={item.href}
-                                    className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all whitespace-nowrap ${
-                                        isActive
+                                    className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all whitespace-nowrap ${isActive
                                             ? "bg-[var(--primary-700)] text-white"
                                             : "text-gray-700 hover:bg-gray-100"
-                                    }`}
+                                        }`}
                                 >
                                     {icons[item.icon]}
                                     <span className="font-medium">{item.name}</span>

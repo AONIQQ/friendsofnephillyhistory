@@ -1,81 +1,29 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 
 interface Nomination {
     id: string;
     nomineeName: string;
     nomineeCategory: string;
-    nomineeYears: string;
+    nomineeYears: string | null;
     nominatorName: string;
     nominatorEmail: string;
+    nominatorPhone: string | null;
+    nominatorRelation: string | null;
     shortDescription: string;
     achievements: string;
     significance: string;
-    status: "pending" | "reviewing" | "approved" | "rejected" | "voting";
+    supportingInfo: string | null;
+    status: string;
+    reviewNotes: string | null;
+    reviewedBy: string | null;
+    reviewedAt: string | null;
     createdAt: string;
-    votes?: number;
 }
 
-// Mock data
-const mockNominations: Nomination[] = [
-    {
-        id: "1",
-        nomineeName: "John Smith",
-        nomineeCategory: "Individual",
-        nomineeYears: "1945-2020",
-        nominatorName: "Robert Davis",
-        nominatorEmail: "rdavis@email.com",
-        shortDescription: "Community leader who founded multiple youth programs in Frankford.",
-        achievements: "Founded Frankford Youth Athletics, mentored over 500 young people, served on school board for 15 years.",
-        significance: "His programs have helped thousands of young people stay active and engaged in the community.",
-        status: "pending",
-        createdAt: "2024-01-15",
-    },
-    {
-        id: "2",
-        nomineeName: "Frankford Historical Society",
-        nomineeCategory: "Organization",
-        nomineeYears: "Founded 1952",
-        nominatorName: "Sarah Johnson",
-        nominatorEmail: "sjohnson@email.com",
-        shortDescription: "Preserving Frankford's history for over 70 years.",
-        achievements: "Maintains historic archives, hosts educational programs, restored Frankford Arsenal artifacts.",
-        significance: "Irreplaceable resource for local history education and preservation.",
-        status: "reviewing",
-        createdAt: "2024-01-14",
-    },
-    {
-        id: "3",
-        nomineeName: "Mary Johnson",
-        nomineeCategory: "Posthumous",
-        nomineeYears: "1898-1985",
-        nominatorName: "Thomas Wilson",
-        nominatorEmail: "twilson@email.com",
-        shortDescription: "Pioneering educator who integrated Mayfair schools.",
-        achievements: "First African American principal in Northeast Philadelphia, established scholarship fund.",
-        significance: "Broke barriers and opened doors for generations of students.",
-        status: "voting",
-        createdAt: "2024-01-12",
-        votes: 12,
-    },
-    {
-        id: "4",
-        nomineeName: "Dr. James Carter",
-        nomineeCategory: "Individual",
-        nomineeYears: "Born 1960",
-        nominatorName: "Lisa Martinez",
-        nominatorEmail: "lmartinez@email.com",
-        shortDescription: "Renowned cardiologist who has provided free heart screenings in Northeast Philadelphia for 20 years.",
-        achievements: "Performed over 10,000 free screenings, trained 50+ local doctors, established mobile health clinic.",
-        significance: "Saved countless lives through early detection and preventive care.",
-        status: "approved",
-        createdAt: "2024-01-10",
-    },
-];
-
-const statusColors = {
+const statusColors: Record<string, string> = {
     pending: "bg-yellow-100 text-yellow-700",
     reviewing: "bg-blue-100 text-blue-700",
     approved: "bg-green-100 text-green-700",
@@ -84,20 +32,104 @@ const statusColors = {
 };
 
 export default function NominationsPage() {
-    const [nominations, setNominations] = useState<Nomination[]>(mockNominations);
+    const [nominations, setNominations] = useState<Nomination[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
     const [selectedNomination, setSelectedNomination] = useState<Nomination | null>(null);
     const [filter, setFilter] = useState<string>("all");
 
-    const filteredNominations = filter === "all" 
-        ? nominations 
+    // Fetch nominations on component mount
+    useEffect(() => {
+        fetchNominations();
+    }, []);
+
+    const fetchNominations = async () => {
+        try {
+            const response = await fetch("/api/nominations");
+            const data = await response.json();
+            if (Array.isArray(data)) {
+                setNominations(data);
+            }
+        } catch (error) {
+            console.error("Error fetching nominations:", error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const filteredNominations = filter === "all"
+        ? nominations
         : nominations.filter(n => n.status === filter);
 
-    const updateStatus = (id: string, newStatus: Nomination["status"]) => {
-        setNominations(prev => 
-            prev.map(n => n.id === id ? { ...n, status: newStatus } : n)
-        );
-        if (selectedNomination?.id === id) {
-            setSelectedNomination(prev => prev ? { ...prev, status: newStatus } : null);
+    const updateStatus = async (id: string, newStatus: string) => {
+        const adminPassword = prompt("Enter admin password:");
+        if (!adminPassword) return;
+
+        try {
+            const response = await fetch("/api/nominations", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    action: "updateStatus",
+                    id,
+                    password: adminPassword,
+                    nomination: {
+                        status: newStatus,
+                    },
+                }),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                alert(data.error || "Failed to update status");
+                return;
+            }
+
+            if (data.nominations) {
+                setNominations(data.nominations);
+                // Update selected nomination if it's the one being updated
+                if (selectedNomination?.id === id) {
+                    const updated = data.nominations.find((n: Nomination) => n.id === id);
+                    if (updated) setSelectedNomination(updated);
+                }
+            }
+        } catch (error) {
+            console.error("Error updating status:", error);
+            alert("Failed to update status");
+        }
+    };
+
+    const deleteNomination = async (id: string) => {
+        const adminPassword = prompt("Enter admin password to delete:");
+        if (!adminPassword) return;
+
+        try {
+            const response = await fetch("/api/nominations", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    action: "delete",
+                    id,
+                    password: adminPassword,
+                }),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                alert(data.error || "Failed to delete nomination");
+                return;
+            }
+
+            if (data.nominations) {
+                setNominations(data.nominations);
+                if (selectedNomination?.id === id) {
+                    setSelectedNomination(null);
+                }
+            }
+        } catch (error) {
+            console.error("Error deleting nomination:", error);
+            alert("Failed to delete nomination");
         }
     };
 
@@ -109,6 +141,14 @@ export default function NominationsPage() {
         approved: nominations.filter(n => n.status === "approved").length,
         rejected: nominations.filter(n => n.status === "rejected").length,
     };
+
+    if (isLoading) {
+        return (
+            <div className="flex items-center justify-center min-h-[400px]">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[var(--primary-700)]"></div>
+            </div>
+        );
+    }
 
     return (
         <div className="space-y-6">
@@ -142,6 +182,9 @@ export default function NominationsPage() {
                 <div className="lg:col-span-1 space-y-4">
                     {filteredNominations.length === 0 ? (
                         <div className="bg-white rounded-xl shadow-sm border p-8 text-center">
+                            <svg className="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
                             <p className="text-gray-500">No nominations found</p>
                         </div>
                     ) : (
@@ -150,14 +193,14 @@ export default function NominationsPage() {
                                 key={nomination.id}
                                 onClick={() => setSelectedNomination(nomination)}
                                 className={`bg-white rounded-xl shadow-sm border p-4 cursor-pointer transition-all hover:shadow-md ${
-                                    selectedNomination?.id === nomination.id 
-                                        ? "ring-2 ring-[var(--primary-500)]" 
+                                    selectedNomination?.id === nomination.id
+                                        ? "ring-2 ring-[var(--primary-500)]"
                                         : ""
                                 }`}
                             >
                                 <div className="flex items-start justify-between mb-2">
                                     <h3 className="font-semibold text-gray-900">{nomination.nomineeName}</h3>
-                                    <span className={`px-2 py-1 text-xs rounded-full ${statusColors[nomination.status]}`}>
+                                    <span className={`px-2 py-1 text-xs rounded-full ${statusColors[nomination.status] || statusColors.pending}`}>
                                         {nomination.status}
                                     </span>
                                 </div>
@@ -165,16 +208,8 @@ export default function NominationsPage() {
                                 <p className="text-sm text-gray-600 line-clamp-2">{nomination.shortDescription}</p>
                                 <div className="flex items-center justify-between mt-3 text-xs text-gray-400">
                                     <span>By {nomination.nominatorName}</span>
-                                    <span>{nomination.createdAt}</span>
+                                    <span>{new Date(nomination.createdAt).toLocaleDateString()}</span>
                                 </div>
-                                {nomination.votes !== undefined && (
-                                    <div className="mt-2 flex items-center gap-1 text-purple-600">
-                                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                        </svg>
-                                        <span className="font-medium">{nomination.votes} votes</span>
-                                    </div>
-                                )}
                             </div>
                         ))
                     )}
@@ -188,11 +223,22 @@ export default function NominationsPage() {
                                 <div className="flex items-start justify-between">
                                     <div>
                                         <h2 className="text-2xl font-bold text-gray-900">{selectedNomination.nomineeName}</h2>
-                                        <p className="text-gray-500">{selectedNomination.nomineeCategory} • {selectedNomination.nomineeYears}</p>
+                                        <p className="text-gray-500">{selectedNomination.nomineeCategory} • {selectedNomination.nomineeYears || "N/A"}</p>
                                     </div>
-                                    <span className={`px-3 py-1 text-sm rounded-full ${statusColors[selectedNomination.status]}`}>
-                                        {selectedNomination.status}
-                                    </span>
+                                    <div className="flex items-center gap-2">
+                                        <span className={`px-3 py-1 text-sm rounded-full ${statusColors[selectedNomination.status] || statusColors.pending}`}>
+                                            {selectedNomination.status}
+                                        </span>
+                                        <button
+                                            onClick={() => deleteNomination(selectedNomination.id)}
+                                            className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                            title="Delete nomination"
+                                        >
+                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                            </svg>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
 
@@ -212,12 +258,35 @@ export default function NominationsPage() {
                                     <p className="text-gray-700">{selectedNomination.significance}</p>
                                 </div>
 
+                                {selectedNomination.supportingInfo && (
+                                    <div>
+                                        <h3 className="font-semibold text-gray-900 mb-2">Supporting Information</h3>
+                                        <p className="text-gray-700">{selectedNomination.supportingInfo}</p>
+                                    </div>
+                                )}
+
                                 <div className="bg-gray-50 rounded-lg p-4">
                                     <h3 className="font-semibold text-gray-900 mb-2">Nominator Information</h3>
                                     <p className="text-gray-700">{selectedNomination.nominatorName}</p>
                                     <p className="text-gray-500 text-sm">{selectedNomination.nominatorEmail}</p>
-                                    <p className="text-gray-400 text-sm mt-1">Submitted: {selectedNomination.createdAt}</p>
+                                    {selectedNomination.nominatorPhone && (
+                                        <p className="text-gray-500 text-sm">{selectedNomination.nominatorPhone}</p>
+                                    )}
+                                    {selectedNomination.nominatorRelation && (
+                                        <p className="text-gray-500 text-sm">Relation: {selectedNomination.nominatorRelation}</p>
+                                    )}
+                                    <p className="text-gray-400 text-sm mt-1">Submitted: {new Date(selectedNomination.createdAt).toLocaleString()}</p>
                                 </div>
+
+                                {selectedNomination.reviewNotes && (
+                                    <div className="bg-blue-50 rounded-lg p-4">
+                                        <h3 className="font-semibold text-gray-900 mb-2">Review Notes</h3>
+                                        <p className="text-gray-700">{selectedNomination.reviewNotes}</p>
+                                        {selectedNomination.reviewedBy && (
+                                            <p className="text-gray-500 text-sm mt-2">Reviewed by: {selectedNomination.reviewedBy}</p>
+                                        )}
+                                    </div>
+                                )}
 
                                 {/* Action Buttons */}
                                 <div className="flex flex-wrap gap-3 pt-4 border-t">
@@ -271,7 +340,7 @@ export default function NominationsPage() {
                                     )}
                                     {selectedNomination.status === "approved" && (
                                         <Link
-                                            href="/admin/inductees/new"
+                                            href="/admin/inductees"
                                             className="px-4 py-2 bg-[var(--primary-700)] text-white rounded-lg hover:bg-[var(--primary-600)] transition-colors"
                                         >
                                             Create Inductee Profile

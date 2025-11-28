@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface Event {
     id: string;
@@ -9,62 +9,52 @@ interface Event {
     time: string;
     location: string;
     description: string;
-    type: "ceremony" | "meeting" | "community";
-    isPublished: boolean;
+    month: string;
+    day: string;
+    eventType: string;
+    createdAt: string;
 }
 
-const mockEvents: Event[] = [
-    {
-        id: "1",
-        title: "2024 Hall of Fame Induction Ceremony",
-        date: "2024-10-15",
-        time: "6:00 PM",
-        location: "Holy Family University",
-        description: "Annual induction ceremony honoring Northeast Philadelphia's finest.",
-        type: "ceremony",
-        isPublished: true,
-    },
-    {
-        id: "2",
-        title: "Nomination Committee Meeting",
-        date: "2024-08-15",
-        time: "7:00 PM",
-        location: "Historical Society of Frankford",
-        description: "Review and discussion of submitted nominations.",
-        type: "meeting",
-        isPublished: true,
-    },
-    {
-        id: "3",
-        title: "NE Philly History Walking Tour",
-        date: "2024-09-21",
-        time: "10:00 AM",
-        location: "Pennypack Park",
-        description: "Explore historic sites including Thomas Holme's burial site.",
-        type: "community",
-        isPublished: false,
-    },
-];
-
-const typeColors = {
+const typeColors: Record<string, string> = {
     ceremony: "bg-[var(--accent-500)] text-[var(--primary-900)]",
     meeting: "bg-[var(--primary-600)] text-white",
     community: "bg-green-100 text-green-700",
 };
 
 export default function EventsPage() {
-    const [events, setEvents] = useState<Event[]>(mockEvents);
+    const [events, setEvents] = useState<Event[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingEvent, setEditingEvent] = useState<Event | null>(null);
+    const [password, setPassword] = useState("");
+    const [error, setError] = useState("");
     const [formData, setFormData] = useState({
         title: "",
         date: "",
         time: "",
         location: "",
         description: "",
-        type: "ceremony" as Event["type"],
-        isPublished: true,
+        eventType: "ceremony",
     });
+
+    // Fetch events on component mount
+    useEffect(() => {
+        fetchEvents();
+    }, []);
+
+    const fetchEvents = async () => {
+        try {
+            const response = await fetch("/api/events");
+            const data = await response.json();
+            if (Array.isArray(data)) {
+                setEvents(data);
+            }
+        } catch (error) {
+            console.error("Error fetching events:", error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     const openModal = (event?: Event) => {
         if (event) {
@@ -75,8 +65,7 @@ export default function EventsPage() {
                 time: event.time,
                 location: event.location,
                 description: event.description,
-                type: event.type,
-                isPublished: event.isPublished,
+                eventType: event.eventType || "ceremony",
             });
         } else {
             setEditingEvent(null);
@@ -86,46 +75,104 @@ export default function EventsPage() {
                 time: "",
                 location: "",
                 description: "",
-                type: "ceremony",
-                isPublished: true,
+                eventType: "ceremony",
             });
         }
+        setError("");
         setIsModalOpen(true);
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (editingEvent) {
-            setEvents(prev =>
-                prev.map(ev =>
-                    ev.id === editingEvent.id
-                        ? { ...ev, ...formData }
-                        : ev
-                )
-            );
-        } else {
-            const newEvent: Event = {
-                id: Date.now().toString(),
-                ...formData,
-            };
-            setEvents(prev => [newEvent, ...prev]);
+        setError("");
+
+        if (!password) {
+            setError("Password is required");
+            return;
         }
-        setIsModalOpen(false);
+
+        // Parse date to get month and day
+        const dateObj = new Date(formData.date);
+        const month = dateObj.toLocaleDateString("en-US", { month: "short" }).toUpperCase();
+        const day = dateObj.getDate().toString();
+
+        try {
+            const response = await fetch("/api/events", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    action: editingEvent ? "update" : "create",
+                    id: editingEvent?.id,
+                    password,
+                    event: {
+                        title: formData.title,
+                        date: formData.date,
+                        time: formData.time,
+                        location: formData.location,
+                        description: formData.description,
+                        month,
+                        day,
+                        eventType: formData.eventType,
+                    },
+                }),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                setError(data.error || "Failed to save event");
+                return;
+            }
+
+            if (data.events) {
+                setEvents(data.events);
+            }
+            setIsModalOpen(false);
+            setPassword("");
+        } catch (error) {
+            console.error("Error saving event:", error);
+            setError("Failed to save event");
+        }
     };
 
-    const deleteEvent = (id: string) => {
-        if (confirm("Are you sure you want to delete this event?")) {
-            setEvents(prev => prev.filter(ev => ev.id !== id));
+    const deleteEvent = async (id: string) => {
+        const adminPassword = prompt("Enter admin password to delete:");
+        if (!adminPassword) return;
+
+        try {
+            const response = await fetch("/api/events", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    action: "delete",
+                    id,
+                    password: adminPassword,
+                }),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                alert(data.error || "Failed to delete event");
+                return;
+            }
+
+            if (data.events) {
+                setEvents(data.events);
+            }
+        } catch (error) {
+            console.error("Error deleting event:", error);
+            alert("Failed to delete event");
         }
     };
 
-    const togglePublish = (id: string) => {
-        setEvents(prev =>
-            prev.map(ev =>
-                ev.id === id ? { ...ev, isPublished: !ev.isPublished } : ev
-            )
+    if (isLoading) {
+        return (
+            <div className="flex items-center justify-center min-h-[400px]">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[var(--primary-700)]"></div>
+            </div>
         );
-    };
+    }
 
     return (
         <div className="space-y-6">
@@ -148,74 +195,71 @@ export default function EventsPage() {
 
             {/* Events List */}
             <div className="bg-white rounded-xl shadow-sm border">
-                <div className="overflow-x-auto">
-                    <table className="w-full">
-                        <thead className="bg-gray-50 border-b">
-                            <tr>
-                                <th className="text-left px-6 py-4 text-sm font-semibold text-gray-900">Event</th>
-                                <th className="text-left px-6 py-4 text-sm font-semibold text-gray-900">Date & Time</th>
-                                <th className="text-left px-6 py-4 text-sm font-semibold text-gray-900">Location</th>
-                                <th className="text-left px-6 py-4 text-sm font-semibold text-gray-900">Type</th>
-                                <th className="text-left px-6 py-4 text-sm font-semibold text-gray-900">Status</th>
-                                <th className="text-right px-6 py-4 text-sm font-semibold text-gray-900">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y">
-                            {events.map((event) => (
-                                <tr key={event.id} className="hover:bg-gray-50">
-                                    <td className="px-6 py-4">
-                                        <div>
-                                            <p className="font-medium text-gray-900">{event.title}</p>
-                                            <p className="text-sm text-gray-500 line-clamp-1">{event.description}</p>
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <p className="text-gray-900">{new Date(event.date).toLocaleDateString()}</p>
-                                        <p className="text-sm text-gray-500">{event.time}</p>
-                                    </td>
-                                    <td className="px-6 py-4 text-gray-700">{event.location}</td>
-                                    <td className="px-6 py-4">
-                                        <span className={`px-2 py-1 text-xs rounded-full ${typeColors[event.type]}`}>
-                                            {event.type}
-                                        </span>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <button
-                                            onClick={() => togglePublish(event.id)}
-                                            className={`px-2 py-1 text-xs rounded-full ${
-                                                event.isPublished
-                                                    ? "bg-green-100 text-green-700"
-                                                    : "bg-gray-100 text-gray-600"
-                                            }`}
-                                        >
-                                            {event.isPublished ? "Published" : "Draft"}
-                                        </button>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <div className="flex items-center justify-end gap-2">
-                                            <button
-                                                onClick={() => openModal(event)}
-                                                className="p-2 text-gray-600 hover:text-[var(--primary-700)] hover:bg-gray-100 rounded-lg transition-colors"
-                                            >
-                                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                                </svg>
-                                            </button>
-                                            <button
-                                                onClick={() => deleteEvent(event.id)}
-                                                className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                                            >
-                                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                                </svg>
-                                            </button>
-                                        </div>
-                                    </td>
+                {events.length === 0 ? (
+                    <div className="p-12 text-center">
+                        <svg className="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        <p className="text-gray-500 text-lg">No events found</p>
+                        <p className="text-gray-400">Click "Add Event" to create your first event</p>
+                    </div>
+                ) : (
+                    <div className="overflow-x-auto">
+                        <table className="w-full">
+                            <thead className="bg-gray-50 border-b">
+                                <tr>
+                                    <th className="text-left px-6 py-4 text-sm font-semibold text-gray-900">Event</th>
+                                    <th className="text-left px-6 py-4 text-sm font-semibold text-gray-900">Date & Time</th>
+                                    <th className="text-left px-6 py-4 text-sm font-semibold text-gray-900">Location</th>
+                                    <th className="text-left px-6 py-4 text-sm font-semibold text-gray-900">Type</th>
+                                    <th className="text-right px-6 py-4 text-sm font-semibold text-gray-900">Actions</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
+                            </thead>
+                            <tbody className="divide-y">
+                                {events.map((event) => (
+                                    <tr key={event.id} className="hover:bg-gray-50">
+                                        <td className="px-6 py-4">
+                                            <div>
+                                                <p className="font-medium text-gray-900">{event.title}</p>
+                                                <p className="text-sm text-gray-500 line-clamp-1">{event.description}</p>
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <p className="text-gray-900">{event.date}</p>
+                                            <p className="text-sm text-gray-500">{event.time}</p>
+                                        </td>
+                                        <td className="px-6 py-4 text-gray-700">{event.location}</td>
+                                        <td className="px-6 py-4">
+                                            <span className={`px-2 py-1 text-xs rounded-full ${typeColors[event.eventType] || typeColors.ceremony}`}>
+                                                {event.eventType || "ceremony"}
+                                            </span>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <div className="flex items-center justify-end gap-2">
+                                                <button
+                                                    onClick={() => openModal(event)}
+                                                    className="p-2 text-gray-600 hover:text-[var(--primary-700)] hover:bg-gray-100 rounded-lg transition-colors"
+                                                >
+                                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                                    </svg>
+                                                </button>
+                                                <button
+                                                    onClick={() => deleteEvent(event.id)}
+                                                    className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                                >
+                                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                )}
             </div>
 
             {/* Modal */}
@@ -228,6 +272,11 @@ export default function EventsPage() {
                             </h2>
                         </div>
                         <form onSubmit={handleSubmit} className="p-6 space-y-4">
+                            {error && (
+                                <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+                                    {error}
+                                </div>
+                            )}
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
                                 <input
@@ -283,8 +332,8 @@ export default function EventsPage() {
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Event Type</label>
                                 <select
-                                    value={formData.type}
-                                    onChange={(e) => setFormData(prev => ({ ...prev, type: e.target.value as Event["type"] }))}
+                                    value={formData.eventType}
+                                    onChange={(e) => setFormData(prev => ({ ...prev, eventType: e.target.value }))}
                                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[var(--primary-500)] focus:border-transparent"
                                 >
                                     <option value="ceremony">Induction Ceremony</option>
@@ -292,22 +341,23 @@ export default function EventsPage() {
                                     <option value="community">Community Event</option>
                                 </select>
                             </div>
-                            <div className="flex items-center gap-2">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Admin Password</label>
                                 <input
-                                    type="checkbox"
-                                    id="isPublished"
-                                    checked={formData.isPublished}
-                                    onChange={(e) => setFormData(prev => ({ ...prev, isPublished: e.target.checked }))}
-                                    className="w-4 h-4 text-[var(--primary-600)] rounded"
+                                    type="password"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    required
+                                    className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[var(--primary-500)] focus:border-transparent"
                                 />
-                                <label htmlFor="isPublished" className="text-sm text-gray-700">
-                                    Publish immediately
-                                </label>
                             </div>
                             <div className="flex gap-3 pt-4">
                                 <button
                                     type="button"
-                                    onClick={() => setIsModalOpen(false)}
+                                    onClick={() => {
+                                        setIsModalOpen(false);
+                                        setPassword("");
+                                    }}
                                     className="flex-1 px-4 py-2 border rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
                                 >
                                     Cancel

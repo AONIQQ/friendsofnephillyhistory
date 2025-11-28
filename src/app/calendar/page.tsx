@@ -1,53 +1,36 @@
 import Link from "next/link"
 import { siteConfig } from "@/config/site"
+import { db } from "@/lib/db"
 
 export const metadata = {
   title: `Events | ${siteConfig.name}`,
   description: "Upcoming events and ceremonies for the Northeast Philadelphia Hall of Fame.",
 }
 
-const upcomingEvents = [
-  {
-    id: "1",
-    title: "2024 Hall of Fame Induction Ceremony",
-    date: "October 2024",
-    time: "6:00 PM",
-    location: "Holy Family University",
-    description: "Join us for our annual induction ceremony honoring Northeast Philadelphia's finest.",
-    type: "ceremony",
-    month: "OCT",
-    day: "TBD",
-  },
-  {
-    id: "2",
-    title: "Nomination Committee Meeting",
-    date: "August 2024",
-    time: "7:00 PM",
-    location: "Historical Society of Frankford",
-    description: "Review and discussion of submitted nominations for the upcoming class.",
-    type: "meeting",
-    month: "AUG",
-    day: "15",
-  },
-  {
-    id: "3",
-    title: "Northeast Philadelphia History Walking Tour",
-    date: "September 2024",
-    time: "10:00 AM",
-    location: "Meet at Pennypack Park",
-    description: "Explore historic sites in Northeast Philadelphia including the burial site of Thomas Holme.",
-    type: "community",
-    month: "SEP",
-    day: "21",
-  },
-]
+export const dynamic = 'force-dynamic'
 
 const pastCeremonies = [
   { year: 2012, location: "Holy Family University", inductees: 5 },
   { year: 2009, location: "Holy Family University", inductees: 7 },
 ]
 
-export default function CalendarPage() {
+async function getEvents() {
+  try {
+    const events = await db.event.findMany({
+      orderBy: {
+        date: "asc",
+      },
+    })
+    return events
+  } catch (error) {
+    console.error("Error fetching events:", error)
+    return []
+  }
+}
+
+export default async function CalendarPage() {
+  const events = await getEvents()
+
   return (
     <>
       {/* Hero Section */}
@@ -69,70 +52,80 @@ export default function CalendarPage() {
           </div>
 
           <div className="max-w-4xl w-full space-y-6">
-            {upcomingEvents.map((event) => (
-              <div
-                key={event.id}
-                className="bg-white rounded-xl overflow-hidden border border-[var(--navy)]/10 hover:border-[var(--gold)] transition-colors"
-              >
-                <div className="flex flex-col md:flex-row">
-                  <div className="md:w-28 bg-[var(--navy)] text-white p-4 md:p-6 flex flex-row md:flex-col items-center justify-center gap-2 md:gap-0 text-center">
-                    <span className="text-sm font-semibold tracking-wide">{event.month}</span>
-                    <span className="text-2xl md:text-3xl font-bold">{event.day}</span>
-                  </div>
-                  <div className="flex-1 p-5 md:p-6">
-                    <div className="flex flex-wrap items-center gap-2 mb-2">
-                      <span
-                        className={`text-xs px-2.5 py-1 rounded-full font-semibold ${
-                          event.type === "ceremony"
-                            ? "bg-[var(--gold)] text-[var(--navy)]"
-                            : event.type === "meeting"
-                              ? "bg-[var(--navy)] text-white"
-                              : "bg-[var(--navy)]/10 text-[var(--navy)]"
-                        }`}
-                      >
-                        {event.type === "ceremony"
-                          ? "Induction Ceremony"
-                          : event.type === "meeting"
-                            ? "Meeting"
-                            : "Community Event"}
-                      </span>
+            {events.length === 0 ? (
+              <div className="text-center py-12">
+                <svg className="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                <p className="text-gray-500 text-lg">No upcoming events at this time.</p>
+                <p className="text-gray-400">Check back soon for new events!</p>
+              </div>
+            ) : (
+              events.map((event) => (
+                <div
+                  key={event.id}
+                  className="bg-white rounded-xl overflow-hidden border border-[var(--navy)]/10 hover:border-[var(--gold)] transition-colors"
+                >
+                  <div className="flex flex-col md:flex-row">
+                    <div className="md:w-28 bg-[var(--navy)] text-white p-4 md:p-6 flex flex-row md:flex-col items-center justify-center gap-2 md:gap-0 text-center">
+                      <span className="text-sm font-semibold tracking-wide">{event.month}</span>
+                      <span className="text-2xl md:text-3xl font-bold">{event.day}</span>
                     </div>
-                    <h3 className="text-xl font-bold font-serif text-[var(--navy)] mb-2">{event.title}</h3>
-                    <p className="text-[var(--navy)]/70 mb-3">{event.description}</p>
-                    <div className="flex flex-wrap gap-4 text-sm text-[var(--navy)]/60">
-                      <span className="flex items-center gap-1.5">
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                          />
-                        </svg>
-                        {event.time}
-                      </span>
-                      <span className="flex items-center gap-1.5">
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                          />
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                          />
-                        </svg>
-                        {event.location}
-                      </span>
+                    <div className="flex-1 p-5 md:p-6">
+                      <div className="flex flex-wrap items-center gap-2 mb-2">
+                        <span
+                          className={`text-xs px-2.5 py-1 rounded-full font-semibold ${
+                            event.eventType === "ceremony"
+                              ? "bg-[var(--gold)] text-[var(--navy)]"
+                              : event.eventType === "meeting"
+                                ? "bg-[var(--navy)] text-white"
+                                : "bg-[var(--navy)]/10 text-[var(--navy)]"
+                          }`}
+                        >
+                          {event.eventType === "ceremony"
+                            ? "Induction Ceremony"
+                            : event.eventType === "meeting"
+                              ? "Meeting"
+                              : "Community Event"}
+                        </span>
+                      </div>
+                      <h3 className="text-xl font-bold font-serif text-[var(--navy)] mb-2">{event.title}</h3>
+                      <p className="text-[var(--navy)]/70 mb-3">{event.description}</p>
+                      <div className="flex flex-wrap gap-4 text-sm text-[var(--navy)]/60">
+                        <span className="flex items-center gap-1.5">
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                            />
+                          </svg>
+                          {event.time}
+                        </span>
+                        <span className="flex items-center gap-1.5">
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                            />
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                            />
+                          </svg>
+                          {event.location}
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </div>
       </section>
