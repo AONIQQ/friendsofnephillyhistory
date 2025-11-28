@@ -51,19 +51,33 @@ export default function Home() {
               <div className="hidden lg:block w-px h-16 bg-[var(--navy)]/10" />
               <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-10">
                 <div className="text-center">
-                  <div className="text-3xl md:text-4xl font-bold text-[var(--gold)]">{siteConfig.stats.inductees}+</div>
+                  <div className="text-3xl md:text-4xl font-bold text-[var(--gold)]">
+                    {(() => {
+                      // Calculate total inductees
+                      // We have one entry for "Historic Houses of Worship" which represents 6 entities
+                      // So we add 5 to the total length (since 1 is already counted)
+                      const historicHousesEntry = inductees.find((i) => i.id === "historic-houses-worship")
+                      const extraCount = historicHousesEntry ? 5 : 0
+                      return inductees.length + extraCount
+                    })()}
+                    +
+                  </div>
                   <div className="text-xs md:text-sm font-semibold text-[var(--navy)]/60 uppercase tracking-wider mt-1">
                     Inductees
                   </div>
                 </div>
                 <div className="text-center">
-                  <div className="text-3xl md:text-4xl font-bold text-[var(--gold)]">{siteConfig.stats.years}</div>
+                  <div className="text-3xl md:text-4xl font-bold text-[var(--gold)]">
+                    {new Date().getFullYear() - 2009}
+                  </div>
                   <div className="text-xs md:text-sm font-semibold text-[var(--navy)]/60 uppercase tracking-wider mt-1">
                     Years
                   </div>
                 </div>
                 <div className="text-center">
-                  <div className="text-3xl md:text-4xl font-bold text-[var(--gold)]">{siteConfig.stats.ceremonies}</div>
+                  <div className="text-3xl md:text-4xl font-bold text-[var(--gold)]">
+                    {new Set(inductees.map((i) => i.inductionYear)).size}
+                  </div>
                   <div className="text-xs md:text-sm font-semibold text-[var(--navy)]/60 uppercase tracking-wider mt-1">
                     Ceremonies
                   </div>
@@ -152,7 +166,7 @@ export default function Home() {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {featuredInductees.map((inductee) => (
               <div key={inductee.id} className="inductee-card group">
-                <div className="relative aspect-[3/4] md:aspect-auto md:h-64 bg-[var(--navy)] overflow-hidden">
+                <div className="relative aspect-[3/4] bg-[var(--navy)] overflow-hidden">
                   {inductee.imageUrl ? (
                     <Image
                       src={inductee.imageUrl}
