@@ -25,7 +25,7 @@ export async function POST(request: Request) {
         const { action, event, id, password } = body;
 
         // Simple password check
-        if (password !== "Ward63GOP") {
+        if (password !== "NEPhilly") {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
@@ -79,7 +79,7 @@ export async function DELETE(request: Request) {
         const body = await request.json();
         const { id, password } = body;
 
-        if (password !== "Ward63GOP") {
+        if (password !== "NEPhilly") {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 

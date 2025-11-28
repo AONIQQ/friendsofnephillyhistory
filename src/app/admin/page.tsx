@@ -2,32 +2,72 @@
 
 import Link from "next/link";
 import { siteConfig } from "@/config/site";
-import { inductees } from "@/data/inductees";
+import { useState, useEffect } from "react";
 
-// Mock data for dashboard stats
-const dashboardStats = {
-    totalInductees: inductees.length,
-    pendingNominations: 8,
-    upcomingEvents: 3,
-    totalDonations: 12450,
-    subscribers: 234,
-    galleryImages: 47,
-};
-
-const recentNominations = [
-    { id: "1", name: "John Smith", category: "Individual", date: "2024-01-15", status: "pending" },
-    { id: "2", name: "Frankford Historical Society", category: "Organization", date: "2024-01-14", status: "reviewing" },
-    { id: "3", name: "Mary Johnson", category: "Posthumous", date: "2024-01-12", status: "pending" },
-];
-
-const recentActivity = [
-    { action: "New nomination submitted", detail: "John Smith nominated by Robert Davis", time: "2 hours ago" },
-    { action: "Event created", detail: "2024 Induction Ceremony scheduled", time: "1 day ago" },
-    { action: "Donation received", detail: "$100 from Anonymous", time: "2 days ago" },
-    { action: "Nomination approved", detail: "Historical Society moved to voting", time: "3 days ago" },
-];
+interface DashboardStats {
+    totalInductees: number;
+    pendingNominations: number;
+    upcomingEvents: number;
+    totalDonations: number;
+    subscribers: number;
+    galleryImages: number;
+    recentNominations: Array<{
+        id: string;
+        name: string;
+        category: string;
+        date: string;
+        status: string;
+    }>;
+    recentActivity: Array<{
+        action: string;
+        detail: string;
+        time: string;
+        type: string;
+    }>;
+}
 
 export default function AdminDashboard() {
+    const [stats, setStats] = useState<DashboardStats | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchStats = async () => {
+            try {
+                const response = await fetch("/api/admin/dashboard");
+                if (response.ok) {
+                    const data = await response.json();
+                    setStats(data);
+                }
+            } catch (error) {
+                console.error("Error fetching dashboard stats:", error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchStats();
+    }, []);
+
+    if (isLoading) {
+        return (
+            <div className="flex items-center justify-center min-h-[400px]">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[var(--primary-700)]"></div>
+            </div>
+        );
+    }
+
+    // Fallback if stats fail to load
+    const dashboardStats = stats || {
+        totalInductees: 0,
+        pendingNominations: 0,
+        upcomingEvents: 0,
+        totalDonations: 0,
+        subscribers: 0,
+        galleryImages: 0,
+        recentNominations: [],
+        recentActivity: []
+    };
+
     return (
         <div className="space-y-8">
             {/* Page Header */}
@@ -168,28 +208,31 @@ export default function AdminDashboard() {
                         </div>
                     </div>
                     <div className="divide-y">
-                        {recentNominations.map((nomination) => (
-                            <div key={nomination.id} className="p-4 hover:bg-gray-50">
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <p className="font-medium text-gray-900">{nomination.name}</p>
-                                        <p className="text-sm text-gray-500">{nomination.category}</p>
-                                    </div>
-                                    <div className="text-right">
-                                        <span className={`inline-block px-2 py-1 text-xs rounded-full ${
-                                            nomination.status === "pending" 
-                                                ? "bg-yellow-100 text-yellow-700"
-                                                : nomination.status === "reviewing"
-                                                ? "bg-blue-100 text-blue-700"
-                                                : "bg-green-100 text-green-700"
-                                        }`}>
-                                            {nomination.status}
-                                        </span>
-                                        <p className="text-xs text-gray-400 mt-1">{nomination.date}</p>
+                        {dashboardStats.recentNominations.length === 0 ? (
+                            <div className="p-6 text-center text-gray-500">No recent nominations</div>
+                        ) : (
+                            dashboardStats.recentNominations.map((nomination) => (
+                                <div key={nomination.id} className="p-4 hover:bg-gray-50">
+                                    <div className="flex items-center justify-between">
+                                        <div>
+                                            <p className="font-medium text-gray-900">{nomination.name}</p>
+                                            <p className="text-sm text-gray-500">{nomination.category}</p>
+                                        </div>
+                                        <div className="text-right">
+                                            <span className={`inline-block px-2 py-1 text-xs rounded-full ${nomination.status === "pending"
+                                                    ? "bg-yellow-100 text-yellow-700"
+                                                    : nomination.status === "reviewing"
+                                                        ? "bg-blue-100 text-blue-700"
+                                                        : "bg-green-100 text-green-700"
+                                                }`}>
+                                                {nomination.status}
+                                            </span>
+                                            <p className="text-xs text-gray-400 mt-1">{nomination.date}</p>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        ))}
+                            ))
+                        )}
                     </div>
                 </div>
 
@@ -199,18 +242,22 @@ export default function AdminDashboard() {
                         <h2 className="text-lg font-semibold text-gray-900">Recent Activity</h2>
                     </div>
                     <div className="divide-y">
-                        {recentActivity.map((activity, index) => (
-                            <div key={index} className="p-4 hover:bg-gray-50">
-                                <div className="flex items-start gap-3">
-                                    <div className="w-2 h-2 mt-2 rounded-full bg-[var(--primary-500)]"></div>
-                                    <div>
-                                        <p className="font-medium text-gray-900">{activity.action}</p>
-                                        <p className="text-sm text-gray-500">{activity.detail}</p>
-                                        <p className="text-xs text-gray-400 mt-1">{activity.time}</p>
+                        {dashboardStats.recentActivity.length === 0 ? (
+                            <div className="p-6 text-center text-gray-500">No recent activity</div>
+                        ) : (
+                            dashboardStats.recentActivity.map((activity, index) => (
+                                <div key={index} className="p-4 hover:bg-gray-50">
+                                    <div className="flex items-start gap-3">
+                                        <div className="w-2 h-2 mt-2 rounded-full bg-[var(--primary-500)]"></div>
+                                        <div>
+                                            <p className="font-medium text-gray-900">{activity.action}</p>
+                                            <p className="text-sm text-gray-500">{activity.detail}</p>
+                                            <p className="text-xs text-gray-400 mt-1">{activity.time}</p>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        ))}
+                            ))
+                        )}
                     </div>
                 </div>
             </div>
