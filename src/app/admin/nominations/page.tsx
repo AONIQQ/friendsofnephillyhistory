@@ -185,9 +185,10 @@ export default function NominationsPage() {
                         key={status}
                         onClick={() => setFilter(status)}
                         className={`px-4 py-2 rounded-lg font-medium transition-colors ${filter === status
-                                ? "bg-[var(--primary-700)] text-white"
+                                ? "text-white"
                                 : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                             }`}
+                        style={filter === status ? { backgroundColor: "var(--primary-700)" } : undefined}
                     >
                         {status.charAt(0).toUpperCase() + status.slice(1)} ({count})
                     </button>

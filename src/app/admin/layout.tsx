@@ -10,7 +10,7 @@ const adminNav = [
     { name: "Nominations", href: "/admin/nominations", icon: "star" },
     { name: "Events", href: "/admin/events", icon: "calendar" },
     { name: "Contact", href: "/admin/contact", icon: "inbox" },
-    { name: "Gallery", href: "/admin/gallery", icon: "image" },
+    // { name: "Gallery", href: "/admin/gallery", icon: "image" },
 ];
 
 const icons: Record<string, React.ReactNode> = {
@@ -106,9 +106,10 @@ export default function AdminLayout({
                                     key={item.name}
                                     href={item.href}
                                     className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all whitespace-nowrap ${isActive
-                                            ? "bg-[var(--primary-700)] text-white"
+                                            ? "text-white"
                                             : "text-gray-700 hover:bg-gray-100"
                                         }`}
+                                    style={isActive ? { backgroundColor: "var(--primary-700)" } : undefined}
                                 >
                                     {icons[item.icon]}
                                     <span className="font-medium">{item.name}</span>

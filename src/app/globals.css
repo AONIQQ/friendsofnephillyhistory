@@ -8,6 +8,13 @@
   --navy: #0a1628;
   --navy-light: #132039;
   --navy-medium: #1a2d4d;
+  --primary-50: #f5f7fb;
+  --primary-100: #e6ecf5;
+  --primary-500: var(--navy-medium);
+  --primary-600: var(--navy-light);
+  --primary-700: var(--navy);
+  --primary-800: #0b1423;
+  --primary-900: #070d18;
 
   /* White - Clean backgrounds */
   --white: #ffffff;
@@ -17,6 +24,8 @@
   --gold: #d4a853;
   --gold-light: #e8c777;
   --gold-dark: #b8923f;
+  --accent-500: var(--gold);
+  --accent-600: var(--gold-dark);
 
   /* Semantic tokens */
   --background: var(--white);

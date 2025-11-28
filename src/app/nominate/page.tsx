@@ -21,6 +21,7 @@ export default function NominatePage() {
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
+  const [submitError, setSubmitError] = useState<string | null>(null)
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target
@@ -29,10 +30,32 @@ export default function NominatePage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setSubmitError(null)
     setIsSubmitting(true)
-    await new Promise((resolve) => setTimeout(resolve, 1500))
-    setIsSubmitting(false)
-    setIsSubmitted(true)
+
+    try {
+      const response = await fetch("/api/nominations", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "create",
+          nomination: formData,
+        }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || "Failed to submit nomination.")
+      }
+
+      setIsSubmitted(true)
+    } catch (error) {
+      console.error("Error submitting nomination:", error)
+      setSubmitError("Something went wrong while submitting your nomination. Please try again.")
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   if (isSubmitted) {
@@ -125,6 +148,11 @@ export default function NominatePage() {
         <div className="hof-container flex flex-col items-center">
           <div className="max-w-3xl w-full">
             <form onSubmit={handleSubmit} className="space-y-8">
+              {submitError && (
+                <div className="p-4 rounded-lg bg-red-50 text-red-700 text-sm text-center">
+                  {submitError}
+                </div>
+              )}
               {/* Nominee Information */}
               <div className="bg-white p-6 md:p-8 rounded-xl border border-[var(--navy)]/10">
                 <h2 className="text-2xl font-bold font-serif text-[var(--navy)] mb-6">Nominee Information</h2>

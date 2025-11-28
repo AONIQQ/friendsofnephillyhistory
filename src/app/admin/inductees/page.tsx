@@ -260,9 +260,9 @@ export default function InducteesAdminPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {filteredInductees.map((inductee) => (
                         <div key={inductee.id} className="bg-white rounded-xl shadow-sm border overflow-hidden hover:shadow-md transition-shadow">
-                            <div className="h-32 bg-gradient-to-br from-[var(--primary-700)] to-[var(--primary-900)] flex items-center justify-center relative">
+                            <div className="bg-gradient-to-br from-[var(--primary-700)] to-[var(--primary-900)] flex items-center justify-center relative overflow-hidden p-2">
                                 {inductee.imageUrl ? (
-                                    <img src={inductee.imageUrl} alt={inductee.name} className="w-full h-full object-cover" />
+                                    <img src={inductee.imageUrl} alt={inductee.name} className="w-full h-auto max-h-64 object-contain" />
                                 ) : (
                                     <span className="text-4xl font-bold text-white/20">{inductee.name.charAt(0)}</span>
                                 )}

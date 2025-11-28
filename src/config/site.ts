@@ -35,7 +35,7 @@ export const siteConfig = {
     { name: "Home", href: "/" },
     { name: "Inductees", href: "/inductees" },
     { name: "History", href: "/history" },
-    { name: "Gallery", href: "/gallery" },
+    // { name: "Gallery", href: "/gallery" },
     { name: "Events", href: "/calendar" },
     { name: "Nominate", href: "/nominate" },
     { name: "Contact", href: "/contact" },

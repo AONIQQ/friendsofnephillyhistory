@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 
+// Admin gallery page is temporarily disabled.
+
 interface GalleryImage {
     id: string;
     title: string;
@@ -47,7 +49,7 @@ const mockImages: GalleryImage[] = [
     },
 ];
 
-export default function GalleryAdminPage() {
+function LegacyGalleryAdminPage() {
     const [images, setImages] = useState<GalleryImage[]>(mockImages);
     const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
     const [filter, setFilter] = useState("all");
@@ -239,4 +241,8 @@ export default function GalleryAdminPage() {
             )}
         </div>
     );
+}
+
+export default function GalleryAdminPage() {
+    return null;
 }

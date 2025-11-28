@@ -1,6 +1,18 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 
+const ADMIN_PASSWORD = process.env.LOGIN;
+
+function requireAdminPassword(password?: string | null) {
+    if (!ADMIN_PASSWORD) {
+        return NextResponse.json({ error: "Admin password not configured" }, { status: 500 });
+    }
+    if (password !== ADMIN_PASSWORD) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    return null;
+}
+
 export const dynamic = 'force-dynamic';
 
 // GET all nominations
@@ -46,9 +58,8 @@ export async function POST(request: Request) {
         }
 
         // Admin operations require password
-        if (password !== "NEPhilly") {
-            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-        }
+        const passwordError = requireAdminPassword(password);
+        if (passwordError) return passwordError;
 
         if (action === "update") {
             await db.nomination.update({
@@ -106,9 +117,8 @@ export async function DELETE(request: Request) {
         const body = await request.json();
         const { id, password } = body;
 
-        if (password !== "NEPhilly") {
-            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-        }
+        const passwordError = requireAdminPassword(password);
+        if (passwordError) return passwordError;
 
         await db.nomination.delete({
             where: { id },

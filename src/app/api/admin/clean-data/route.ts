@@ -5,8 +5,12 @@ export async function POST(request: Request) {
     try {
         const { password } = await request.json();
 
-        // Verify admin password
-        if (password !== "NEPhilly") {
+        const adminPassword = process.env.LOGIN;
+        if (!adminPassword) {
+            return NextResponse.json({ error: "Admin password not configured" }, { status: 500 });
+        }
+
+        if (password !== adminPassword) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 

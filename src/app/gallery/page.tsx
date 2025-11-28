@@ -1,11 +1,13 @@
+// Gallery page is temporarily disabled.
+
 import { siteConfig } from "@/config/site"
 
-export const metadata = {
+const legacyGalleryMetadata = {
   title: `Gallery | ${siteConfig.name}`,
   description: "Photos from induction ceremonies and historical images of Northeast Philadelphia.",
 }
 
-const galleryImages = [
+const legacyGalleryImages = [
   {
     id: "1",
     title: "2012 Induction Ceremony",
@@ -64,7 +66,7 @@ const galleryImages = [
   },
 ]
 
-export default function GalleryPage() {
+function LegacyGalleryPage() {
   return (
     <>
       {/* Hero Section */}
@@ -88,7 +90,7 @@ export default function GalleryPage() {
             </p>
           </div>
           <div className="gallery-grid w-full max-w-6xl">
-            {galleryImages.map((image) => (
+            {legacyGalleryImages.map((image) => (
               <div key={image.id} className="gallery-item group cursor-pointer">
                 <div className="w-full h-full bg-[var(--navy-light)] relative flex items-center justify-center">
                   <svg className="w-10 h-10 text-white/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -116,4 +118,8 @@ export default function GalleryPage() {
       </section>
     </>
   )
+}
+
+export default function GalleryPage() {
+  return null
 }

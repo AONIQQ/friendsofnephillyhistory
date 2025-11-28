@@ -1,6 +1,6 @@
 // Simple admin authentication utility using sessionStorage
-const ADMIN_PASSWORD = "NEPhilly";
 const AUTH_KEY = "admin_authenticated";
+const PASSWORD_KEY = "admin_password";
 
 export const adminAuth = {
     // Check if user is authenticated
@@ -11,20 +11,22 @@ export const adminAuth = {
 
     // Authenticate with password
     authenticate(password: string): boolean {
-        if (password === ADMIN_PASSWORD) {
-            sessionStorage.setItem(AUTH_KEY, "true");
-            return true;
-        }
-        return false;
+        if (typeof window === "undefined") return false;
+        sessionStorage.setItem(AUTH_KEY, "true");
+        sessionStorage.setItem(PASSWORD_KEY, password);
+        return true;
     },
 
     // Clear authentication
     logout() {
         sessionStorage.removeItem(AUTH_KEY);
+        sessionStorage.removeItem(PASSWORD_KEY);
     },
 
     // Get auth token for API calls
     getAuthToken(): string {
-        return this.isAuthenticated() ? ADMIN_PASSWORD : "";
+        if (typeof window === "undefined") return "";
+        if (!this.isAuthenticated()) return "";
+        return sessionStorage.getItem(PASSWORD_KEY) || "";
     }
 };

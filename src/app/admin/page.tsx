@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { siteConfig } from "@/config/site";
 import { useState, useEffect } from "react";
+import { adminAuth } from "@/lib/admin-auth";
 
 interface DashboardStats {
     totalInductees: number;
@@ -44,15 +45,31 @@ export default function AdminDashboard() {
         }
     }, []);
 
-    const handleLogin = (e: React.FormEvent) => {
+    const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (password === "NEPhilly") {
-            sessionStorage.setItem("admin_authenticated", "true");
+        setLoginError("");
+
+        try {
+            const response = await fetch("/api/admin/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ password }),
+            });
+            const data = await response.json();
+
+            if (!response.ok) {
+                setLoginError(data.error || "Invalid password");
+                return;
+            }
+
+            adminAuth.authenticate(password);
             setIsAuthenticated(true);
             setIsLoading(true);
+            setPassword("");
             fetchStats();
-        } else {
-            setLoginError("Invalid password");
+        } catch (error) {
+            console.error("Admin login error:", error);
+            setLoginError("Unable to verify credentials");
         }
     };
 
