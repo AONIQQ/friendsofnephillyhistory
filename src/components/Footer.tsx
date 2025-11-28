@@ -9,7 +9,7 @@ export default function Footer() {
     <footer className="bg-[var(--navy)] text-white">
       <div className="pt-20 pb-12">
         <div className="hof-container">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 lg:gap-12">
             {/* Brand Column */}
             <div className="lg:col-span-1">
               <Link href="/" className="flex items-center gap-3 mb-6 group">
@@ -54,25 +54,6 @@ export default function Footer() {
               </ul>
             </div>
 
-            {/* Partners */}
-            <div>
-              <h4 className="text-white font-bold text-base mb-6 font-serif">Our Partners</h4>
-              <ul className="space-y-5">
-                <li>
-                  <span className="block text-white font-medium">{siteConfig.partners.holyFamily.name}</span>
-                  <span className="text-sm text-white/60">{siteConfig.partners.holyFamily.role}</span>
-                </li>
-                <li>
-                  <span className="block text-white font-medium">{siteConfig.partners.historicalSociety.name}</span>
-                  <span className="text-sm text-white/60">{siteConfig.partners.historicalSociety.role}</span>
-                </li>
-                <li>
-                  <span className="block text-white font-medium">{siteConfig.partners.centerForHistory.name}</span>
-                  <span className="text-sm text-white/60">{siteConfig.partners.centerForHistory.role}</span>
-                </li>
-              </ul>
-            </div>
-
             {/* Newsletter */}
             <div>
               <h4 className="text-white font-bold text-base mb-6 font-serif">Stay Connected</h4>
@@ -96,14 +77,14 @@ export default function Footer() {
           <p>
             © {currentYear} {siteConfig.name}. All rights reserved.
           </p>
-          <div className="flex gap-6">
-            <Link href="#" className="hover:text-white transition-colors">
-              Privacy Policy
-            </Link>
-            <Link href="#" className="hover:text-white transition-colors">
-              Terms of Service
-            </Link>
-          </div>
+          <a
+            href="https://www.aoniqq.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-white/70 hover:text-[var(--gold)] transition-colors"
+          >
+            Site by AONIQQ LLC
+          </a>
         </div>
       </div>
     </footer>

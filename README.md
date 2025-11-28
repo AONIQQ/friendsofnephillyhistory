@@ -1,121 +1,67 @@
-# Ward Website - Quick Start Guide
+# Northeast Philadelphia Hall of Fame Website
 
-## For New Ward Deployments
+This repository powers the official Northeast Philadelphia Hall of Fame site. It serves up inductee stories, event details, nomination forms, and a lightweight admin dashboard that staff can use to keep everything current.
 
-### Automated Deployment (Recommended)
+## Getting Started
 
-\`\`\`bash
-# Clone the repository
-git clone https://github.com/AONIQQ/63rdward.git new-ward-name
-cd new-ward-name
-
-# Run the automated deployment script
-./deploy-ward.sh
-\`\`\`
-
-The script will:
-1. ✅ Prompt for ward information
-2. ✅ Let you choose a color theme
-3. ✅ Update all configuration files
-4. ✅ Push to your GitHub repository
-5. ✅ Deploy to Vercel
-
-After the script completes, follow the displayed instructions to add the database.
-
-### Manual Deployment
-
-See [REPLICATION_GUIDE.md](./REPLICATION_GUIDE.md) for detailed step-by-step instructions.
-
-## Color Themes
-
-Choose from pre-configured themes or create your own in `src/config/theme.ts`:
-
-1. **Navy & Gold** (Default - 63rd Ward)
-2. **Forest Green & Cream**
-3. **Deep Purple & Coral**
-4. **Burgundy & Champagne**
-5. **Teal & Amber**
-6. **Charcoal & Mint**
-
-### Custom Colors
-
-Edit `src/config/theme.ts`:
-
-\`\`\`typescript
-export const themeConfig = {
-  primary: {
-    hue: 220,        // 0-360: Color wheel position
-    saturation: 80,  // 0-100: Color intensity
-    lightness: 20,   // 0-100: Brightness
-  },
-  accent: {
-    hue: 45,         // Complementary color
-    saturation: 75,
-    lightness: 50,
-  },
-};
-\`\`\`
-
-Changes apply site-wide automatically!
-
-## Configuration Files
-
-| File | Purpose |
-|------|---------|
-| `src/config/site.ts` | Ward name, contact info, content |
-| `src/config/theme.ts` | Color scheme |
-| `src/app/api/events/route.ts` | Admin password |
-
-## Local Development
-
-\`\`\`bash
+```bash
+git clone https://github.com/<your-org>/nehalloffame-website.git
+cd nehalloffame-website
 npm install
-npm run dev
-\`\`\`
+```
 
-Visit http://localhost:3000
+Create a `.env.local` file with the credentials you pulled from Vercel (or whichever host you use):
+
+```
+DATABASE_URL="postgres://..."             # pooled connection for Next.js
+PRISMA_DATABASE_URL="postgres://..."       # Prisma Accelerate / pooled URL
+POSTGRES_URL="postgres://..."              # direct/non-pooled connection
+LOGIN="super-secret-admin-password"        # required by /api/admin/login
+```
+
+Then boot the dev server:
+
+```bash
+npm run dev
+# visit http://localhost:3000
+```
 
 ## Admin Panel
 
 - URL: `/admin`
-- Password: `philly63`
-- Change password in `src/app/api/events/route.ts` line 26
+- Auth flow: call `/api/admin/login` with `{ password: process.env.LOGIN }`
+- Successful logins are cached in `sessionStorage` (`admin_authenticated` flag)
+- Update or rotate the password by changing the `LOGIN` environment variable—no code changes required
 
-## Tech Stack
+## Database & Prisma
 
-- **Framework**: Next.js 16
-- **Database**: Prisma Postgres
-- **Hosting**: Vercel
-- **Forms**: FormSubmit.co
-- **Styling**: Tailwind CSS v4
+- Schema: `prisma/schema.prisma`
+- Push local schema changes: `npx prisma db push`
+- Generate client: `npx prisma generate`
+- Helpful scripts live in `scripts/` (e.g., `prisma-db-push.cjs` ensures URLs exist before builds)
 
-## Support
+## Project Structure
 
-- **Deployment Guide**: See `REPLICATION_GUIDE.md`
-- **Database Setup**: See `VERCEL_DEPLOYMENT.md`
-- **Issues**: Check Vercel logs
+| Path | Purpose |
+|------|---------|
+| `src/app` | Route handlers, API endpoints, and layouts |
+| `src/components` | Shared UI pieces (Hero, Footer, Cards, etc.) |
+| `src/data` | Static fallback content for events and inductees |
+| `src/config` | Site metadata plus color tokens |
+| `prisma/` | Schema, dev database references, and seeds |
+| `public/` | Images for inductees + global assets |
 
-## Quick Commands
+## NPM Scripts
 
-\`\`\`bash
-# Deploy to production
-vercel --prod
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start Next.js in development mode |
+| `npm run build` | Generate Prisma client, sync schema, and produce a production build |
+| `npm run start` | Serve the compiled app |
+| `npm run lint` | Run ESLint |
 
-# Pull environment variables
-vercel env pull
+## Deployment Notes
 
-# Update database schema
-DATABASE_URL="your-url" npx prisma db push
-
-# View logs
-vercel logs
-\`\`\`
-
-## Estimated Time
-
-- **Automated**: ~15 minutes
-- **Manual**: ~35 minutes
-
----
-
-**Live Example**: https://ne-philly-63rd-ward.vercel.app
+- Vercel is the primary target; connect the repo, set the four env vars above for every environment, and Vercel will run `npm run build`
+- Any other Node host works as long as Prisma environment variables are available before build time
+- The build script already runs `prisma generate` and `prisma db push`, so deploys stay in sync with the schema automatically

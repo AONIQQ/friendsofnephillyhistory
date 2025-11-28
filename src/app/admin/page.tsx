@@ -206,24 +206,6 @@ export default function AdminDashboard() {
                     </Link>
                 </div>
 
-                <div className="bg-white rounded-xl shadow-sm border p-6">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <p className="text-sm text-gray-500">Gallery Images</p>
-                            <p className="text-3xl font-bold text-blue-600">
-                                {dashboardStats.galleryImages}
-                            </p>
-                        </div>
-                        <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                            <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                            </svg>
-                        </div>
-                    </div>
-                    <Link href="/admin/gallery" className="text-sm text-[var(--primary-600)] hover:underline mt-4 inline-block">
-                        Manage gallery →
-                    </Link>
-                </div>
             </div>
 
             {/* Recent Activity & Nominations */}
@@ -298,7 +280,7 @@ export default function AdminDashboard() {
                 <h2 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h2>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <Link
-                        href="/admin/events/new"
+                        href="/admin/events"
                         className="flex flex-col items-center gap-2 p-4 rounded-lg border-2 border-dashed border-gray-200 hover:border-[var(--primary-500)] hover:bg-[var(--primary-50)] transition-colors"
                     >
                         <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -307,7 +289,7 @@ export default function AdminDashboard() {
                         <span className="text-sm font-medium text-gray-700">Add Event</span>
                     </Link>
                     <Link
-                        href="/admin/gallery/upload"
+                        href="/admin/gallery"
                         className="flex flex-col items-center gap-2 p-4 rounded-lg border-2 border-dashed border-gray-200 hover:border-[var(--primary-500)] hover:bg-[var(--primary-50)] transition-colors"
                     >
                         <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -325,7 +307,7 @@ export default function AdminDashboard() {
                         <span className="text-sm font-medium text-gray-700">Review Nominations</span>
                     </Link>
                     <Link
-                        href="/admin/inductees/new"
+                        href="/admin/inductees"
                         className="flex flex-col items-center gap-2 p-4 rounded-lg border-2 border-dashed border-gray-200 hover:border-[var(--primary-500)] hover:bg-[var(--primary-50)] transition-colors"
                     >
                         <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
