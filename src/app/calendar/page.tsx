@@ -1,18 +1,14 @@
-import Link from "next/link"
 import { siteConfig } from "@/config/site"
 import { db } from "@/lib/db"
 
 export const metadata = {
   title: `Events | ${siteConfig.name}`,
-  description: "Upcoming events and ceremonies for the Northeast Philadelphia Hall of Fame.",
+  description: "Upcoming events and activities for Friends of Northeast Philadelphia History.",
 }
 
 export const dynamic = 'force-dynamic'
 
-const pastCeremonies = [
-  { year: 2012, location: "Holy Family University", inductees: 5 },
-  { year: 2009, location: "Holy Family University", inductees: 7 },
-]
+
 
 async function getEvents() {
   try {
@@ -32,26 +28,25 @@ export default async function CalendarPage() {
   const events = await getEvents()
 
   return (
-    <>
-      {/* Hero Section */}
-      <section className="bg-[var(--navy)] pt-12 pb-16 md:pt-16 md:pb-20">
-        <div className="hof-container flex flex-col items-center text-center">
-          <h1 className="text-4xl md:text-5xl font-bold text-white font-serif mb-4">Events & Ceremonies</h1>
-          <p className="text-xl text-white/80 max-w-2xl">
-            Join us at our events celebrating Northeast Philadelphia&apos;s remarkable history and heroes.
+    <main className="pt-24 pb-20 bg-[var(--cream)] min-h-screen">
+      <div className="hof-container">
+        {/* Hero Section */}
+        <div className="text-center mb-16 max-w-3xl mx-auto">
+          <span className="hof-section-label">Community Events</span>
+          <h1 className="hof-section-title">Events & Ceremonies</h1>
+          <p className="hof-section-description">
+            Join us at gatherings that celebrate Northeast Philadelphia&apos;s remarkable history and heroes.
           </p>
         </div>
-      </section>
 
-      {/* Upcoming Events */}
-      <section className="hof-section bg-white">
-        <div className="hof-container flex flex-col items-center">
-          <div className="hof-section-header">
+        {/* Upcoming Events */}
+        <section className="bg-white rounded-2xl p-8 md:p-12 border border-[var(--border)] shadow-sm">
+          <div className="text-center mb-10">
             <span className="hof-section-label">Mark Your Calendar</span>
-            <h2 className="hof-section-title">Upcoming Events</h2>
+            <h2 className="text-3xl font-bold font-serif text-[var(--green)]">Upcoming Events</h2>
           </div>
 
-          <div className="max-w-4xl w-full space-y-6">
+          <div className="space-y-6">
             {events.length === 0 ? (
               <div className="text-center py-12">
                 <svg className="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -64,34 +59,33 @@ export default async function CalendarPage() {
               events.map((event) => (
                 <div
                   key={event.id}
-                  className="bg-white rounded-xl overflow-hidden border border-[var(--navy)]/10 hover:border-[var(--gold)] transition-colors"
+                  className="bg-white rounded-xl overflow-hidden border border-[var(--green)]/15 hover:border-[var(--gold)] transition-colors shadow-sm"
                 >
                   <div className="flex flex-col md:flex-row">
-                    <div className="md:w-28 bg-[var(--navy)] text-white p-4 md:p-6 flex flex-row md:flex-col items-center justify-center gap-2 md:gap-0 text-center">
-                      <span className="text-sm font-semibold tracking-wide">{event.month}</span>
+                    <div className="md:w-28 bg-[var(--green)] text-white p-4 md:p-6 flex flex-row md:flex-col items-center justify-center gap-2 md:gap-0 text-center">
+                      <span className="text-sm font-semibold tracking-wide uppercase">{event.month}</span>
                       <span className="text-2xl md:text-3xl font-bold">{event.day}</span>
                     </div>
                     <div className="flex-1 p-5 md:p-6">
                       <div className="flex flex-wrap items-center gap-2 mb-2">
                         <span
-                          className={`text-xs px-2.5 py-1 rounded-full font-semibold ${
-                            event.eventType === "ceremony"
-                              ? "bg-[var(--gold)] text-[var(--navy)]"
-                              : event.eventType === "meeting"
-                                ? "bg-[var(--navy)] text-white"
-                                : "bg-[var(--navy)]/10 text-[var(--navy)]"
-                          }`}
+                          className={`text-xs px-2.5 py-1 rounded-full font-semibold ${event.eventType === "ceremony"
+                            ? "bg-[var(--gold)] text-[var(--green)]"
+                            : event.eventType === "meeting"
+                              ? "bg-[var(--green)] text-white"
+                              : "bg-[var(--green)]/10 text-[var(--green)]"
+                            }`}
                         >
                           {event.eventType === "ceremony"
-                            ? "Induction Ceremony"
+                            ? "Special Ceremony"
                             : event.eventType === "meeting"
                               ? "Meeting"
                               : "Community Event"}
                         </span>
                       </div>
-                      <h3 className="text-xl font-bold font-serif text-[var(--navy)] mb-2">{event.title}</h3>
-                      <p className="text-[var(--navy)]/70 mb-3">{event.description}</p>
-                      <div className="flex flex-wrap gap-4 text-sm text-[var(--navy)]/60">
+                      <h3 className="text-xl font-bold font-serif text-[var(--green)] mb-2">{event.title}</h3>
+                      <p className="text-[var(--green)]/70 mb-3">{event.description}</p>
+                      <div className="flex flex-wrap gap-4 text-sm text-[var(--green)]/60">
                         <span className="flex items-center gap-1.5">
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path
@@ -127,60 +121,24 @@ export default async function CalendarPage() {
               ))
             )}
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Past Ceremonies */}
-      <section className="hof-section bg-[var(--white-soft)]">
-        <div className="hof-container flex flex-col items-center">
-          <div className="hof-section-header">
-            <span className="hof-section-label">Looking Back</span>
-            <h2 className="hof-section-title">Past Induction Ceremonies</h2>
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-6 max-w-4xl w-full">
-            {pastCeremonies.map((ceremony) => (
-              <div key={ceremony.year} className="bg-white p-6 rounded-xl border border-[var(--navy)]/10">
-                <div className="flex items-center gap-4 mb-4">
-                  <div className="w-14 h-14 rounded-full bg-[var(--navy)] flex items-center justify-center flex-shrink-0">
-                    <span className="text-lg font-bold text-white">{ceremony.year}</span>
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-bold font-serif text-[var(--navy)]">Class of {ceremony.year}</h3>
-                    <p className="text-[var(--navy)]/60 text-sm">
-                      {ceremony.inductees} Inductees • {ceremony.location}
-                    </p>
-                  </div>
-                </div>
-                <Link
-                  href={`/inductees#year-${ceremony.year}`}
-                  className="text-[var(--navy)] font-semibold hover:text-[var(--gold)] transition-colors text-sm"
-                >
-                  View Inductees →
-                </Link>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Newsletter CTA */}
-      <section className="bg-[var(--navy)] py-16">
-        <div className="hof-container flex flex-col items-center text-center">
-          <h2 className="text-3xl font-bold text-white font-serif mb-4">Stay Informed</h2>
-          <p className="text-white/80 max-w-2xl mb-8">
-            Sign up for our newsletter to receive updates about upcoming events, new inductees, and more.
+        {/* Newsletter CTA */}
+        <section className="mt-16 bg-white rounded-2xl p-8 md:p-12 border border-[var(--border)] text-center shadow-sm">
+          <h2 className="text-3xl font-bold text-[var(--green)] font-serif mb-4">Stay Informed</h2>
+          <p className="text-[var(--green)]/80 max-w-2xl mx-auto mb-8">
+            Sign up for our newsletter to receive updates about upcoming events, publications, and preservation efforts.
           </p>
-          <div className="flex flex-col sm:flex-row gap-3 justify-center max-w-md w-full">
+          <div className="flex flex-col sm:flex-row gap-3 justify-center max-w-md mx-auto w-full">
             <input
               type="email"
               placeholder="Enter your email"
-              className="flex-1 px-4 py-3 rounded-lg border-0 focus:ring-2 focus:ring-[var(--gold)] text-[var(--navy)]"
+              className="flex-1 px-4 py-3 rounded-lg border border-[var(--border)] focus:ring-2 focus:ring-[var(--gold)] focus:outline-none text-[var(--green)]"
             />
-            <button className="hof-btn hof-btn-gold">Subscribe</button>
+            <button className="hof-btn hof-btn-primary">Subscribe</button>
           </div>
-        </div>
-      </section>
-    </>
+        </section>
+      </div>
+    </main>
   )
 }

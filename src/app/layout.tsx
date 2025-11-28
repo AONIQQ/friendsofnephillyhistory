@@ -17,23 +17,29 @@ export const metadata: Metadata = {
   description: siteConfig.description,
   icons: {
     icon: [
-      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/favicon.ico", type: "image/x-icon" },
       { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
     ],
-    shortcut: "/favicon-32x32.png",
+    shortcut: "/favicon.ico",
     apple: "/apple-touch-icon.png",
   },
   keywords: [
     "Northeast Philadelphia",
-    "Hall of Fame",
+    "History",
     "NE Philly",
     "Philadelphia history",
-    "local heroes",
-    "community recognition",
+    "Historical Society",
+    "Local History",
     "Holmesburg",
     "Tacony",
     "Frankford",
-    "inductees",
+    "Pennypack",
+    "Bustleton",
+    "Mayfair",
+    "Torresdale",
+    "Bridesburg",
+    "Wissinoming",
   ],
   authors: [{ name: siteConfig.name }],
   openGraph: {
@@ -42,11 +48,20 @@ export const metadata: Metadata = {
     siteName: siteConfig.name,
     title: siteConfig.name,
     description: siteConfig.description,
+    images: [
+      {
+        url: "/logo.jpg",
+        width: 1500,
+        height: 468,
+        alt: `${siteConfig.name} logo`,
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: siteConfig.name,
     description: siteConfig.description,
+    images: ["/logo.jpg"],
   },
 }
 

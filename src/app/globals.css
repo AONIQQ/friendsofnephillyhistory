@@ -5,101 +5,107 @@
 
 :root {
   /* Navy Blue - Primary */
-  --navy: #0a1628;
-  --navy-light: #132039;
-  --navy-medium: #1a2d4d;
-  --primary-50: #f5f7fb;
-  --primary-100: #e6ecf5;
+  --navy: #0F172A;
+  --navy-light: #1E293B;
+  --navy-medium: #152036;
+  --primary-50: #F1F5F9;
+  --primary-100: #E2E8F0;
   --primary-500: var(--navy-medium);
   --primary-600: var(--navy-light);
   --primary-700: var(--navy);
-  --primary-800: #0b1423;
-  --primary-900: #070d18;
+  --primary-800: #020617;
+  --primary-900: #000000;
 
-  /* White - Clean backgrounds */
+  /* Cream - Backgrounds */
+  --cream: #F9F7F2;
+  --cream-soft: #F4F1EA;
   --white: #ffffff;
-  --white-soft: #f8fafc;
+  --white-soft: #F8FAFC;
 
-  /* Gold - Accent */
-  --gold: #d4a853;
-  --gold-light: #e8c777;
-  --gold-dark: #b8923f;
+  /* Heritage Green Palette */
+  --green: #1B4D3E;
+  --green-medium: #235F4D;
+
+  /* Antique Gold - Accent */
+  --gold: #C5A059;
+  --gold-light: #D4B475;
+  --gold-dark: #A68542;
   --accent-500: var(--gold);
   --accent-600: var(--gold-dark);
 
   /* Semantic tokens */
-  --background: var(--white);
+  --background: var(--cream);
   --foreground: var(--navy);
   --card: var(--white);
   --card-foreground: var(--navy);
   --popover: var(--white);
   --popover-foreground: var(--navy);
   --card-background: var(--white);
-  --card-border: rgba(10, 22, 40, 0.08);
+  --card-border: rgba(15, 23, 42, 0.1);
 
   /* Default shadcn tokens */
   --radius: 0.625rem;
   --primary: var(--navy);
   --primary-foreground: var(--white);
-  --secondary: var(--white-soft);
+  --secondary: var(--cream-soft);
   --secondary-foreground: var(--navy);
-  --muted: var(--white-soft);
-  --muted-foreground: rgba(10, 22, 40, 0.6);
+  --muted: var(--cream-soft);
+  --muted-foreground: rgba(15, 23, 42, 0.6);
   --accent: var(--gold);
   --accent-foreground: var(--navy);
   --destructive: oklch(0.577 0.245 27.325);
   --destructive-foreground: oklch(0.577 0.245 27.325);
-  --border: rgba(10, 22, 40, 0.1);
-  --input: rgba(10, 22, 40, 0.1);
+  --border: rgba(15, 23, 42, 0.15);
+  --input: rgba(15, 23, 42, 0.15);
   --ring: var(--gold);
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --sidebar: var(--cream);
+  --sidebar-foreground: var(--navy);
+  --sidebar-primary: var(--navy);
+  --sidebar-primary-foreground: var(--white);
+  --sidebar-accent: var(--cream-soft);
+  --sidebar-accent-foreground: var(--navy);
+  --sidebar-border: rgba(15, 23, 42, 0.1);
+  --sidebar-ring: var(--gold);
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.145 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.145 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.985 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
+  --background: #0D261F;
+  --foreground: #F9F7F2;
+  --card: #143A2F;
+  --card-foreground: #F9F7F2;
+  --popover: #143A2F;
+  --popover-foreground: #F9F7F2;
+  --primary: #F9F7F2;
+  --primary-foreground: #1B4D3E;
+  --secondary: #235F4D;
+  --secondary-foreground: #F9F7F2;
+  --muted: #235F4D;
+  --muted-foreground: #C5A059;
+  --accent: #235F4D;
+  --accent-foreground: #F9F7F2;
   --destructive: oklch(0.396 0.141 25.723);
   --destructive-foreground: oklch(0.637 0.237 25.331);
-  --border: oklch(0.269 0 0);
-  --input: oklch(0.269 0 0);
-  --ring: oklch(0.439 0 0);
+  --border: #235F4D;
+  --input: #235F4D;
+  --ring: #C5A059;
   --chart-1: oklch(0.488 0.243 264.376);
   --chart-2: oklch(0.696 0.17 162.48);
   --chart-3: oklch(0.769 0.188 70.08);
   --chart-4: oklch(0.627 0.265 303.9);
   --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(0.269 0 0);
-  --sidebar-ring: oklch(0.439 0 0);
+  --sidebar: #143A2F;
+  --sidebar-foreground: #F9F7F2;
+  --sidebar-primary: #C5A059;
+  --sidebar-primary-foreground: #1B4D3E;
+  --sidebar-accent: #235F4D;
+  --sidebar-accent-foreground: #F9F7F2;
+  --sidebar-border: #235F4D;
+  --sidebar-ring: #C5A059;
 }
 
 @theme inline {
@@ -147,6 +153,7 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
@@ -177,7 +184,7 @@ body {
 
 ::selection {
   background: var(--gold);
-  color: var(--navy);
+  color: var(--green);
 }
 
 /* Removed problematic color:inherit from links, using text-decoration only */
@@ -198,7 +205,7 @@ img {
   letter-spacing: -0.02em;
   font-weight: 700;
   line-height: 1.2;
-  color: var(--navy);
+  color: var(--green);
 }
 
 /* Fixed container centering - proper centered container with max-width and auto margins */
@@ -270,19 +277,19 @@ img {
 }
 
 .hof-btn-primary {
-  background: var(--navy);
+  background: var(--green);
   color: var(--white);
-  border-color: var(--navy);
+  border-color: var(--green);
 }
 
 .hof-btn-primary:hover {
-  background: var(--navy-medium);
-  border-color: var(--navy-medium);
+  background: var(--green-medium);
+  border-color: var(--green-medium);
 }
 
 .hof-btn-gold {
   background: var(--gold);
-  color: var(--navy);
+  color: var(--green);
   border-color: var(--gold);
   font-weight: 700;
 }
@@ -293,13 +300,13 @@ img {
 }
 
 .hof-btn-outline {
-  border-color: var(--navy);
-  color: var(--navy);
+  border-color: var(--green);
+  color: var(--green);
   background: transparent;
 }
 
 .hof-btn-outline:hover {
-  background: var(--navy);
+  background: var(--green);
   color: var(--white);
 }
 
@@ -311,7 +318,7 @@ img {
 
 .hof-btn-outline-white:hover {
   background: var(--white);
-  color: var(--navy);
+  color: var(--green);
 }
 
 /* Inductee Cards */
@@ -359,7 +366,7 @@ img {
 
 .hof-label {
   font-weight: 600;
-  color: var(--navy);
+  color: var(--green);
   margin-bottom: 0.5rem;
   display: block;
   font-size: 0.875rem;
@@ -390,7 +397,7 @@ img {
   border-radius: 0.75rem;
   overflow: hidden;
   aspect-ratio: 1;
-  background: linear-gradient(135deg, var(--navy), var(--navy-medium));
+  background: linear-gradient(135deg, var(--green), var(--green-medium));
 }
 
 .gallery-item img {
@@ -458,7 +465,7 @@ img {
   font-family: var(--font-serif), serif;
   font-size: 2rem;
   font-weight: 700;
-  color: var(--navy);
+  color: var(--green);
   margin-bottom: 1rem;
   line-height: 1.2;
 }
@@ -470,7 +477,7 @@ img {
 }
 
 .hof-section-description {
-  color: rgba(10, 22, 40, 0.7);
+  color: rgba(27, 77, 62, 0.7);
   font-size: 1.125rem;
   max-width: 42rem;
   margin-left: auto;
@@ -484,7 +491,7 @@ img {
   padding: 2.5rem;
   border-radius: 1rem;
   text-align: center;
-  border: 1px solid rgba(10, 22, 40, 0.08);
+  border: 1px solid rgba(27, 77, 62, 0.08);
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -508,20 +515,20 @@ img {
 }
 
 .hof-cta-icon-navy {
-  background: rgba(10, 22, 40, 0.1);
-  color: var(--navy);
+  background: rgba(27, 77, 62, 0.1);
+  color: var(--green);
 }
 
 .hof-cta-title {
   font-family: var(--font-serif), serif;
   font-size: 1.5rem;
   font-weight: 700;
-  color: var(--navy);
+  color: var(--green);
   margin-bottom: 1rem;
 }
 
 .hof-cta-text {
-  color: rgba(10, 22, 40, 0.7);
+  color: rgba(27, 77, 62, 0.7);
   line-height: 1.7;
   margin-bottom: 1.5rem;
   flex-grow: 1;
@@ -533,6 +540,7 @@ img {
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);

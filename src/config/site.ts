@@ -1,27 +1,24 @@
 export const siteConfig = {
-  name: "Northeast Philadelphia Hall of Fame",
-  shortName: "NE Philly HOF",
+  name: "Friends of Northeast Philadelphia History",
+  shortName: "FNEPH",
   location: "Northeast Philadelphia",
   description:
-    "Honoring the distinguished individuals and organizations who have made significant contributions to Northeast Philadelphia's rich history and community.",
-  tagline: "Celebrating Northeast Philadelphia's Finest Since 2009",
+    "Encouraging the preservation and promotion of Northeast Philadelphia history by supporting local historians and historical organizations.",
+  tagline: "Preserving Northeast Philadelphia's History Since 2009",
   founded: 2009,
   contact: {
-    email: "info@nephillyhof.org",
-    formSubmitEmail: "nominations@nephillyhof.org",
-    phone: "(215) 555-FAME",
-    address: "Holy Family University, Northeast Philadelphia, PA",
+    email: "nephillyhistory@gmail.com",
+    formSubmitEmail: "nephillyhistory@gmail.com",
+    phone: "215-370-4626",
+    address: "Northeast Philadelphia, PA",
   },
   links: {
-    facebook: "https://www.facebook.com/p/Northeast-Philadelphia-Hall-of-Fame-100064304065347/",
+    facebook: "https://www.facebook.com/people/Northeast-Philadelphia-History-Network/100064480698589/",
+    youtube: "https://www.youtube.com/@FNEPH/videos",
     twitter: "https://twitter.com",
     instagram: "https://instagram.com",
   },
   partners: {
-    holyFamily: {
-      name: "Holy Family University",
-      role: "Ceremony Host",
-    },
     historicalSociety: {
       name: "Historical Society of Frankford",
       role: "Partner Organization",
@@ -30,64 +27,50 @@ export const siteConfig = {
       name: "Center for Northeast Philadelphia History",
       role: "Partner Organization",
     },
+    holyFamily: {
+      name: "Holy Family University",
+      role: "Partner Organization",
+    },
   },
   nav: [
     { name: "Home", href: "/" },
-    { name: "Inductees", href: "/inductees" },
-    { name: "History", href: "/history" },
-    // { name: "Gallery", href: "/gallery" },
-    { name: "Events", href: "/calendar" },
-    { name: "Nominate", href: "/nominate" },
+    { name: "Books", href: "/books" },
+    { name: "Neighborhoods", href: "/neighborhoods" },
+    { name: "Historical Sketches", href: "/historical-sketches" },
+    { name: "Links", href: "/links" },
+    { name: "About", href: "/about" },
     { name: "Contact", href: "/contact" },
-    { name: "Support", href: "/donate" },
+    { name: "Calendar", href: "/calendar" },
   ],
   hero: {
-    title: "Northeast Philadelphia Hall of Fame",
+    title: "Friends of Northeast Philadelphia History",
     subtitle:
-      "Honoring the extraordinary individuals and organizations who have shaped our community's legacy for over 300 years.",
-    cta: "Meet Our Inductees",
-    ctaLink: "/inductees",
+      "Preserving and promoting the rich history of Northeast Philadelphia through education, events, and community engagement.",
+    cta: "Explore Our Neighborhoods",
+    ctaLink: "/neighborhoods",
   },
   mission: {
     title: "Our Mission",
     description:
-      "The project immortalizes people – present and past – whose lives, accomplishments or contributions should make the Northeast proud and fosters a greater awareness and appreciation of the area's rich history.",
+      "To encourage the preservation and promotion of Northeast Philadelphia history by supporting the work of local historians and historical organizations, sponsoring local history activities, and acquiring historical materials.",
     points: [
-      "Preserving and celebrating Northeast Philadelphia's rich heritage",
-      "Recognizing outstanding contributions to our community",
-      "Educating future generations about local history and heroes",
-      "Building pride and unity across Northeast Philadelphia neighborhoods",
+      "Supporting local historians and organizations",
+      "Sponsoring local history activities",
+      "Acquiring historical materials and property",
+      "Promoting awareness of Northeast Philadelphia's heritage",
     ],
   },
   about: {
-    title: "About the Hall of Fame",
+    title: "About FNEPH",
     description:
-      "The Northeast Philadelphia Hall of Fame was established in 2009 to honor the remarkable individuals and organizations that have shaped our community. What began as a conversation between State Representative Dennis O'Brien and Northeast Times writer Tom Waring has grown into an annual tradition celebrating excellence.",
+      "Established in 2009, Friends of Northeast Philadelphia is a 501(c)3 non-profit organization dedicated to preserving the unique history of our region.",
     history:
-      "In partnership with the Center for Northeast Philadelphia History, the Historical Society of Frankford, and Holy Family University, the Hall of Fame has inducted distinguished honorees who have made lasting impacts on Northeast Philadelphia and beyond.",
-  },
-  values: {
-    title: "What We Honor",
-    items: [
-      {
-        title: "Legacy",
-        description: "Recognizing those whose contributions have stood the test of time and continue to inspire.",
-      },
-      {
-        title: "Service",
-        description: "Honoring dedication to community improvement and the betterment of others' lives.",
-      },
-      {
-        title: "Achievement",
-        description: "Celebrating excellence in arts, sports, business, public service, and humanitarian work.",
-      },
-    ],
+      "We work to connect the community with its past through various programs, publications, and partnerships with local historical societies.",
   },
   stats: {
-    inductees: 32,
+    books: 12,
+    neighborhoods: 10,
     years: 15,
-    categories: 4,
-    ceremonies: 6,
+    events: 50,
   },
-  inducteeCategories: ["Individual", "Organization", "Historic House of Worship", "Posthumous"],
 }

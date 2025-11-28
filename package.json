@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "build": "prisma generate && node ./scripts/prisma-db-push.cjs && next build",
+    "build": "prisma generate && node ./scripts/prisma-db-push.cjs && next build --webpack",
     "dev": "next dev",
     "lint": "eslint",
     "start": "next start"

@@ -5,7 +5,7 @@ import Link from "next/link"
 
 export function Hero() {
   return (
-    <section className="relative min-h-[85vh] flex items-center justify-center bg-[var(--navy)] overflow-hidden">
+    <section className="relative min-h-[85vh] flex items-center justify-center bg-[var(--green)] overflow-hidden">
       {/* Subtle pattern overlay */}
       <div className="absolute inset-0 opacity-5 pointer-events-none">
         <div
@@ -22,9 +22,6 @@ export function Hero() {
 
       <div className="relative w-full py-24 md:py-32 z-10">
         <div className="flex flex-col items-center justify-center text-center px-6 md:px-8">
-          {/* Decorative gold bar - now properly centered */}
-          <div className="h-1 w-16 bg-[var(--gold)] rounded-full mb-8" />
-
           <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-white mb-6 font-serif max-w-4xl leading-tight">
             {siteConfig.hero.title}
           </h1>
@@ -32,11 +29,11 @@ export function Hero() {
           <p className="mt-6 text-lg sm:text-xl leading-relaxed text-white/80 max-w-2xl">{siteConfig.hero.subtitle}</p>
 
           <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link href="/inductees" className="hof-btn hof-btn-gold w-full sm:w-auto text-lg">
+            <Link href="/neighborhoods" className="hof-btn hof-btn-gold w-full sm:w-auto text-lg">
               {siteConfig.hero.cta}
             </Link>
-            <Link href="/nominate" className="hof-btn hof-btn-outline-white w-full sm:w-auto text-lg">
-              Nominate Someone
+            <Link href="/about" className="hof-btn hof-btn-outline-white w-full sm:w-auto text-lg">
+              Learn More
               <span aria-hidden="true">→</span>
             </Link>
           </div>

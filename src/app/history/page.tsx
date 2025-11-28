@@ -21,7 +21,7 @@ const timeline = [
   { year: "1964", event: "Rev. Leon Sullivan founds Opportunities Industrialization Centers" },
   { year: "1974", event: "Aid for Friends founded in Northeast Philadelphia" },
   { year: "2000", event: "Katharine Drexel canonized as a saint" },
-  { year: "2009", event: "Northeast Philadelphia Hall of Fame established" },
+  { year: "2009", event: "Friends of Northeast Philadelphia History established" },
   { year: "2011", event: "Chris Ferguson commands final Space Shuttle mission" },
 ]
 
@@ -50,10 +50,9 @@ export default function HistoryPage() {
               beyond our neighborhoods.
             </p>
             <p className="text-lg text-[var(--navy)]/80 leading-relaxed">
-              The Northeast Philadelphia Hall of Fame was established in 2009 to preserve and celebrate this remarkable
-              legacy. What began as a conversation between State Representative Dennis O&apos;Brien and Northeast Times
-              writer Tom Waring has grown into an annual tradition of honoring those who have made significant
-              contributions to our community and beyond.
+              Friends of Northeast Philadelphia History was established in 2009 to preserve and celebrate this remarkable
+              legacy. We are dedicated to honoring those who have made significant contributions to our community and beyond,
+              and ensuring their stories are preserved for future generations.
             </p>
           </div>
         </div>
@@ -84,25 +83,6 @@ export default function HistoryPage() {
 
       {/* Did You Know */}
       <DidYouKnow showCta={false} />
-
-      {/* About the Hall of Fame */}
-      <section className="hof-section bg-white">
-        <div className="hof-container flex flex-col items-center">
-          <div className="max-w-4xl text-center">
-            <h2 className="hof-section-title mb-6">About the Hall of Fame</h2>
-            <p className="text-lg text-[var(--navy)]/80 mb-4">{siteConfig.about.description}</p>
-            <p className="text-[var(--navy)]/70 mb-8">{siteConfig.about.history}</p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/inductees" className="hof-btn hof-btn-primary">
-                Meet Our Inductees
-              </Link>
-              <Link href="/nominate" className="hof-btn hof-btn-gold">
-                Nominate Someone
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
     </>
   )
 }

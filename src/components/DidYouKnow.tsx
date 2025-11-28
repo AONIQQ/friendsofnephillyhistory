@@ -1,5 +1,19 @@
 import Link from "next/link"
-import { historicalFacts } from "@/data/inductees"
+
+const historicalFacts = [
+  {
+    year: "1692",
+    fact: "Surveyor Thomas Holme created one of the first comprehensive maps of Pennsylvania from his home in what is now Northeast Philadelphia.",
+  },
+  {
+    year: "1895",
+    fact: "Saint Katharine Drexel opened the first order of sisters dedicated to serving Native American and African American communities while living in Torresdale.",
+  },
+  {
+    year: "2001",
+    fact: "NASA astronaut Christopher Ferguson, a Central High School graduate from Northeast Philadelphia, piloted Space Shuttle Atlantis on STS-115.",
+  },
+]
 
 interface DidYouKnowProps {
   showCta?: boolean
