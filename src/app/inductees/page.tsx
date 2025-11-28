@@ -44,18 +44,18 @@ async function getInductees() {
 
 export default async function InducteesPage() {
   const dbInductees = await getInductees()
-  
+
   // Use database inductees if available, otherwise fall back to static data
   const hasDbInductees = dbInductees.length > 0
-  
+
   // Get unique induction years from DB or static data
   const inductionYears = hasDbInductees
     ? [...new Set(dbInductees.map((i) => i.inductionYear))].sort((a, b) => b - a)
     : [2012, 2009]
-  
+
   // Helper to get inductees by year from DB
   const getDbInducteesByYear = (year: number) => dbInductees.filter((i) => i.inductionYear === year)
-  
+
   // Parse achievements from string (stored as newline-separated in DB)
   const parseAchievements = (achievements: string): string[] => {
     return achievements.split('\n').filter((a) => a.trim().length > 0)
@@ -82,27 +82,19 @@ export default async function InducteesPage() {
         <div className="hof-container flex flex-col items-center">
           <div className="flex flex-wrap justify-center gap-8 md:gap-16">
             <div className="text-center">
-              <div className="text-3xl font-bold text-[var(--gold)]">{totalInductees}</div>
-              <div className="text-[var(--navy)]/60 text-sm">Total Inductees</div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-[var(--gold)]">{inductionYears.length}</div>
-              <div className="text-[var(--navy)]/60 text-sm">Induction Classes</div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-[var(--gold)]">4</div>
-              <div className="text-[var(--navy)]/60 text-sm">Categories</div>
+
             </div>
           </div>
+
         </div>
       </section>
 
       {/* Inductees by Year */}
       {inductionYears.map((year) => {
         const yearInductees = hasDbInductees ? getDbInducteesByYear(year) : getInducteesByYear(year)
-        
+
         if (yearInductees.length === 0) return null
-        
+
         return (
           <section key={year} className="hof-section bg-white" id={`year-${year}`}>
             <div className="hof-container flex flex-col items-center">
@@ -121,10 +113,10 @@ export default async function InducteesPage() {
 
                 <div className="space-y-8">
                   {yearInductees.map((inductee) => {
-                    const achievements = hasDbInductees 
+                    const achievements = hasDbInductees
                       ? parseAchievements((inductee as DBInductee).achievements)
                       : (inductee as typeof staticInductees[0]).achievements
-                    
+
                     return (
                       <article
                         key={inductee.id}
@@ -133,12 +125,12 @@ export default async function InducteesPage() {
                       >
                         <div className="grid lg:grid-cols-3">
                           {/* Image/Avatar Section */}
-                          <div className="bg-[var(--navy)] h-48 lg:h-auto min-h-[200px] flex items-center justify-center relative overflow-hidden">
+                          <div className="bg-[var(--navy)] h-auto flex items-center justify-center relative overflow-hidden">
                             {(inductee as DBInductee).imageUrl ? (
-                              <img 
-                                src={(inductee as DBInductee).imageUrl!} 
+                              <img
+                                src={(inductee as DBInductee).imageUrl!}
                                 alt={inductee.name}
-                                className="w-full h-full object-cover"
+                                className="w-full h-auto"
                               />
                             ) : (
                               <div className="text-6xl lg:text-8xl text-white/20 font-bold">

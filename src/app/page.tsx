@@ -5,8 +5,32 @@ import { inductees } from "@/data/inductees"
 import { DidYouKnow } from "@/components/DidYouKnow"
 import { Neighborhoods } from "@/components/Neighborhoods"
 
+import Image from "next/image"
+
+// Revalidate every 24 hours to ensure rotation happens
+export const revalidate = 86400
+
+function getFeaturedInductees() {
+  // Calculate current week number since epoch
+  const weekNumber = Math.floor(Date.now() / (7 * 24 * 60 * 60 * 1000))
+
+  // Calculate start index based on week number
+  // We use modulo to wrap around when we reach the end of the array
+  const startIndex = (weekNumber * 6) % inductees.length
+
+  // Get 6 inductees, handling the wrap-around case
+  let featured = inductees.slice(startIndex, startIndex + 6)
+
+  // If we don't have enough items at the end, wrap around to the beginning
+  if (featured.length < 6) {
+    featured = [...featured, ...inductees.slice(0, 6 - featured.length)]
+  }
+
+  return featured
+}
+
 export default function Home() {
-  const featuredInductees = inductees.slice(0, 6)
+  const featuredInductees = getFeaturedInductees()
 
   return (
     <>
@@ -128,16 +152,28 @@ export default function Home() {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {featuredInductees.map((inductee) => (
               <div key={inductee.id} className="inductee-card group">
-                <div className="relative h-48 bg-[var(--navy)] flex items-center justify-center">
-                  <span className="absolute top-3 right-3 px-3 py-1 bg-[var(--gold)] text-[var(--navy)] rounded-full text-xs font-bold">
+                <div className="relative aspect-[3/4] md:aspect-auto md:h-64 bg-[var(--navy)] overflow-hidden">
+                  {inductee.imageUrl ? (
+                    <Image
+                      src={inductee.imageUrl}
+                      alt={inductee.name}
+                      fill
+                      className="object-cover object-top transition-transform duration-500 group-hover:scale-105"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <div className="text-5xl text-white/20 font-bold group-hover:scale-110 transition-transform duration-300">
+                        {inductee.name
+                          .split(" ")
+                          .map((n) => n[0])
+                          .join("")}
+                      </div>
+                    </div>
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-[var(--navy)]/90 via-[var(--navy)]/20 to-transparent opacity-60 group-hover:opacity-40 transition-opacity duration-300" />
+                  <span className="absolute top-3 right-3 px-3 py-1 bg-[var(--gold)] text-[var(--navy)] rounded-full text-xs font-bold z-10">
                     {inductee.inductionYear}
                   </span>
-                  <div className="text-5xl text-white/20 font-bold group-hover:scale-110 transition-transform duration-300">
-                    {inductee.name
-                      .split(" ")
-                      .map((n) => n[0])
-                      .join("")}
-                  </div>
                 </div>
                 <div className="p-6">
                   <span className="text-xs font-bold text-[var(--gold)] uppercase tracking-wider">
