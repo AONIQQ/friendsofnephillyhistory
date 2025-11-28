@@ -28,44 +28,27 @@ const inquiryTypeLabels: Record<string, string> = {
     general: "General Inquiry",
 };
 
+import { adminAuth } from "@/lib/admin-auth";
+import { useRouter } from "next/navigation";
+
 export default function ContactSubmissionsPage() {
+    const router = useRouter();
     const [submissions, setSubmissions] = useState<ContactSubmission[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [selectedSubmission, setSelectedSubmission] = useState<ContactSubmission | null>(null);
     const [filter, setFilter] = useState<string>("all");
-    const [password, setPassword] = useState("");
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [authError, setAuthError] = useState("");
 
-    const authenticate = async () => {
-        if (!password) {
-            setAuthError("Password is required");
+    // Check auth and fetch submissions on component mount
+    useEffect(() => {
+        if (!adminAuth.isAuthenticated()) {
+            router.push("/admin");
             return;
         }
-
-        try {
-            const response = await fetch(`/api/contact?password=${encodeURIComponent(password)}`);
-            const data = await response.json();
-
-            if (!response.ok) {
-                setAuthError(data.error || "Authentication failed");
-                return;
-            }
-
-            if (Array.isArray(data)) {
-                setSubmissions(data);
-                setIsAuthenticated(true);
-                setAuthError("");
-            }
-        } catch (error) {
-            console.error("Error authenticating:", error);
-            setAuthError("Failed to authenticate");
-        } finally {
-            setIsLoading(false);
-        }
-    };
+        fetchSubmissions();
+    }, []);
 
     const fetchSubmissions = async () => {
+        const password = adminAuth.getAuthToken();
         try {
             const response = await fetch(`/api/contact?password=${encodeURIComponent(password)}`);
             const data = await response.json();
@@ -74,10 +57,19 @@ export default function ContactSubmissionsPage() {
             }
         } catch (error) {
             console.error("Error fetching submissions:", error);
+        } finally {
+            setIsLoading(false);
         }
     };
 
     const updateStatus = async (id: string, newStatus: string) => {
+        const password = adminAuth.getAuthToken();
+        if (!password) {
+            alert("Session expired. Please login again.");
+            router.push("/admin");
+            return;
+        }
+
         try {
             const response = await fetch("/api/contact", {
                 method: "POST",
@@ -112,6 +104,13 @@ export default function ContactSubmissionsPage() {
 
     const deleteSubmission = async (id: string) => {
         if (!confirm("Are you sure you want to delete this submission?")) return;
+
+        const password = adminAuth.getAuthToken();
+        if (!password) {
+            alert("Session expired. Please login again.");
+            router.push("/admin");
+            return;
+        }
 
         try {
             const response = await fetch("/api/contact", {
@@ -155,36 +154,6 @@ export default function ContactSubmissionsPage() {
         archived: submissions.filter(s => s.status === "archived").length,
     };
 
-    if (!isAuthenticated) {
-        return (
-            <div className="flex items-center justify-center min-h-[400px]">
-                <div className="bg-white rounded-xl shadow-sm border p-8 max-w-md w-full">
-                    <h1 className="text-2xl font-bold text-gray-900 mb-2">Contact Submissions</h1>
-                    <p className="text-gray-600 mb-6">Enter admin password to view submissions</p>
-                    {authError && (
-                        <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm mb-4">
-                            {authError}
-                        </div>
-                    )}
-                    <input
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        placeholder="Admin password"
-                        className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[var(--primary-500)] focus:border-transparent mb-4"
-                        onKeyDown={(e) => e.key === "Enter" && authenticate()}
-                    />
-                    <button
-                        onClick={authenticate}
-                        className="w-full px-4 py-2 bg-[var(--primary-700)] text-white rounded-lg hover:bg-[var(--primary-600)] transition-colors"
-                    >
-                        View Submissions
-                    </button>
-                </div>
-            </div>
-        );
-    }
-
     if (isLoading) {
         return (
             <div className="flex items-center justify-center min-h-[400px]">
@@ -218,11 +187,10 @@ export default function ContactSubmissionsPage() {
                     <button
                         key={status}
                         onClick={() => setFilter(status)}
-                        className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                            filter === status
+                        className={`px-4 py-2 rounded-lg font-medium transition-colors ${filter === status
                                 ? "bg-[var(--primary-700)] text-white"
                                 : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                        }`}
+                            }`}
                     >
                         {status.charAt(0).toUpperCase() + status.slice(1)} ({count})
                     </button>
@@ -249,11 +217,10 @@ export default function ContactSubmissionsPage() {
                                         updateStatus(submission.id, "read");
                                     }
                                 }}
-                                className={`bg-white rounded-xl shadow-sm border p-4 cursor-pointer transition-all hover:shadow-md ${
-                                    selectedSubmission?.id === submission.id
+                                className={`bg-white rounded-xl shadow-sm border p-4 cursor-pointer transition-all hover:shadow-md ${selectedSubmission?.id === submission.id
                                         ? "ring-2 ring-[var(--primary-500)]"
                                         : ""
-                                }`}
+                                    }`}
                             >
                                 <div className="flex items-start justify-between mb-2">
                                     <h3 className="font-semibold text-gray-900">{submission.name}</h3>

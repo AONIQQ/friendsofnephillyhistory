@@ -27,29 +27,85 @@ interface DashboardStats {
 export default function AdminDashboard() {
     const [stats, setStats] = useState<DashboardStats | null>(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [password, setPassword] = useState("");
+    const [loginError, setLoginError] = useState("");
 
     useEffect(() => {
-        const fetchStats = async () => {
-            try {
-                const response = await fetch("/api/admin/dashboard");
-                if (response.ok) {
-                    const data = await response.json();
-                    setStats(data);
-                }
-            } catch (error) {
-                console.error("Error fetching dashboard stats:", error);
-            } finally {
+        // Check authentication on mount
+        if (typeof window !== "undefined") {
+            const auth = sessionStorage.getItem("admin_authenticated");
+            if (auth === "true") {
+                setIsAuthenticated(true);
+                fetchStats();
+            } else {
                 setIsLoading(false);
             }
-        };
-
-        fetchStats();
+        }
     }, []);
+
+    const handleLogin = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (password === "NEPhilly") {
+            sessionStorage.setItem("admin_authenticated", "true");
+            setIsAuthenticated(true);
+            setIsLoading(true);
+            fetchStats();
+        } else {
+            setLoginError("Invalid password");
+        }
+    };
+
+    const fetchStats = async () => {
+        try {
+            const response = await fetch("/api/admin/dashboard");
+            if (response.ok) {
+                const data = await response.json();
+                setStats(data);
+            }
+        } catch (error) {
+            console.error("Error fetching dashboard stats:", error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     if (isLoading) {
         return (
             <div className="flex items-center justify-center min-h-[400px]">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[var(--primary-700)]"></div>
+            </div>
+        );
+    }
+
+    if (!isAuthenticated) {
+        return (
+            <div className="max-w-md mx-auto mt-20 p-6 bg-white rounded-xl shadow-sm border">
+                <h1 className="text-2xl font-bold text-gray-900 mb-6 text-center">Admin Login</h1>
+                <form onSubmit={handleLogin} className="space-y-4">
+                    {loginError && (
+                        <div className="p-3 bg-red-50 text-red-700 text-sm rounded-lg">
+                            {loginError}
+                        </div>
+                    )}
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                        <input
+                            type="password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[var(--primary-500)] focus:border-transparent"
+                            placeholder="Enter admin password"
+                            autoFocus
+                        />
+                    </div>
+                    <button
+                        type="submit"
+                        className="w-full py-2 bg-[var(--primary-700)] text-white rounded-lg hover:bg-[var(--primary-600)] transition-colors"
+                    >
+                        Login
+                    </button>
+                </form>
             </div>
         );
     }

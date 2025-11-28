@@ -21,12 +21,15 @@ const typeColors: Record<string, string> = {
     community: "bg-green-100 text-green-700",
 };
 
+import { adminAuth } from "@/lib/admin-auth";
+import { useRouter } from "next/navigation";
+
 export default function EventsPage() {
+    const router = useRouter();
     const [events, setEvents] = useState<Event[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingEvent, setEditingEvent] = useState<Event | null>(null);
-    const [password, setPassword] = useState("");
     const [error, setError] = useState("");
     const [formData, setFormData] = useState({
         title: "",
@@ -37,8 +40,12 @@ export default function EventsPage() {
         eventType: "ceremony",
     });
 
-    // Fetch events on component mount
+    // Check auth and fetch events on component mount
     useEffect(() => {
+        if (!adminAuth.isAuthenticated()) {
+            router.push("/admin");
+            return;
+        }
         fetchEvents();
     }, []);
 
@@ -86,8 +93,10 @@ export default function EventsPage() {
         e.preventDefault();
         setError("");
 
+        const password = adminAuth.getAuthToken();
         if (!password) {
-            setError("Password is required");
+            setError("Session expired. Please login again.");
+            router.push("/admin");
             return;
         }
 
@@ -128,7 +137,6 @@ export default function EventsPage() {
                 setEvents(data.events);
             }
             setIsModalOpen(false);
-            setPassword("");
         } catch (error) {
             console.error("Error saving event:", error);
             setError("Failed to save event");
@@ -136,8 +144,14 @@ export default function EventsPage() {
     };
 
     const deleteEvent = async (id: string) => {
-        const adminPassword = prompt("Enter admin password to delete:");
-        if (!adminPassword) return;
+        if (!confirm("Are you sure you want to delete this event?")) return;
+
+        const password = adminAuth.getAuthToken();
+        if (!password) {
+            alert("Session expired. Please login again.");
+            router.push("/admin");
+            return;
+        }
 
         try {
             const response = await fetch("/api/events", {
@@ -146,7 +160,7 @@ export default function EventsPage() {
                 body: JSON.stringify({
                     action: "delete",
                     id,
-                    password: adminPassword,
+                    password,
                 }),
             });
 
@@ -341,22 +355,12 @@ export default function EventsPage() {
                                     <option value="community">Community Event</option>
                                 </select>
                             </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Admin Password</label>
-                                <input
-                                    type="password"
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    required
-                                    className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[var(--primary-500)] focus:border-transparent"
-                                />
-                            </div>
+
                             <div className="flex gap-3 pt-4">
                                 <button
                                     type="button"
                                     onClick={() => {
                                         setIsModalOpen(false);
-                                        setPassword("");
                                     }}
                                     className="flex-1 px-4 py-2 border rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
                                 >

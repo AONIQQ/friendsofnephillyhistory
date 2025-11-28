@@ -31,14 +31,22 @@ const statusColors: Record<string, string> = {
     voting: "bg-purple-100 text-purple-700",
 };
 
+import { adminAuth } from "@/lib/admin-auth";
+import { useRouter } from "next/navigation";
+
 export default function NominationsPage() {
+    const router = useRouter();
     const [nominations, setNominations] = useState<Nomination[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [selectedNomination, setSelectedNomination] = useState<Nomination | null>(null);
     const [filter, setFilter] = useState<string>("all");
 
-    // Fetch nominations on component mount
+    // Check auth and fetch nominations on component mount
     useEffect(() => {
+        if (!adminAuth.isAuthenticated()) {
+            router.push("/admin");
+            return;
+        }
         fetchNominations();
     }, []);
 
@@ -61,8 +69,12 @@ export default function NominationsPage() {
         : nominations.filter(n => n.status === filter);
 
     const updateStatus = async (id: string, newStatus: string) => {
-        const adminPassword = prompt("Enter admin password:");
-        if (!adminPassword) return;
+        const password = adminAuth.getAuthToken();
+        if (!password) {
+            alert("Session expired. Please login again.");
+            router.push("/admin");
+            return;
+        }
 
         try {
             const response = await fetch("/api/nominations", {
@@ -71,7 +83,7 @@ export default function NominationsPage() {
                 body: JSON.stringify({
                     action: "updateStatus",
                     id,
-                    password: adminPassword,
+                    password,
                     nomination: {
                         status: newStatus,
                     },
@@ -100,8 +112,14 @@ export default function NominationsPage() {
     };
 
     const deleteNomination = async (id: string) => {
-        const adminPassword = prompt("Enter admin password to delete:");
-        if (!adminPassword) return;
+        if (!confirm("Are you sure you want to delete this nomination?")) return;
+
+        const password = adminAuth.getAuthToken();
+        if (!password) {
+            alert("Session expired. Please login again.");
+            router.push("/admin");
+            return;
+        }
 
         try {
             const response = await fetch("/api/nominations", {
@@ -110,7 +128,7 @@ export default function NominationsPage() {
                 body: JSON.stringify({
                     action: "delete",
                     id,
-                    password: adminPassword,
+                    password,
                 }),
             });
 
@@ -166,11 +184,10 @@ export default function NominationsPage() {
                     <button
                         key={status}
                         onClick={() => setFilter(status)}
-                        className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                            filter === status
+                        className={`px-4 py-2 rounded-lg font-medium transition-colors ${filter === status
                                 ? "bg-[var(--primary-700)] text-white"
                                 : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                        }`}
+                            }`}
                     >
                         {status.charAt(0).toUpperCase() + status.slice(1)} ({count})
                     </button>
@@ -192,11 +209,10 @@ export default function NominationsPage() {
                             <div
                                 key={nomination.id}
                                 onClick={() => setSelectedNomination(nomination)}
-                                className={`bg-white rounded-xl shadow-sm border p-4 cursor-pointer transition-all hover:shadow-md ${
-                                    selectedNomination?.id === nomination.id
+                                className={`bg-white rounded-xl shadow-sm border p-4 cursor-pointer transition-all hover:shadow-md ${selectedNomination?.id === nomination.id
                                         ? "ring-2 ring-[var(--primary-500)]"
                                         : ""
-                                }`}
+                                    }`}
                             >
                                 <div className="flex items-start justify-between mb-2">
                                     <h3 className="font-semibold text-gray-900">{nomination.nomineeName}</h3>
