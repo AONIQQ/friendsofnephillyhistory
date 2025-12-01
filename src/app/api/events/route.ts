@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { ensureDefaultEvents } from "@/lib/default-events";
 import { db } from "@/lib/db";
 
 const ADMIN_PASSWORD = process.env.LOGIN;
@@ -18,6 +19,8 @@ export const dynamic = 'force-dynamic';
 // GET all events
 export async function GET() {
     try {
+        await ensureDefaultEvents();
+
         const events = await db.event.findMany({
             orderBy: {
                 createdAt: "desc",

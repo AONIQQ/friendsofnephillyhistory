@@ -1,4 +1,7 @@
+import type { Event as EventRecord } from "@prisma/client"
+
 import { siteConfig } from "@/config/site"
+import { ensureDefaultEvents } from "@/lib/default-events"
 import { db } from "@/lib/db"
 
 export const metadata = {
@@ -10,8 +13,123 @@ export const dynamic = 'force-dynamic'
 
 
 
+type CalendarEvent = EventRecord & { eventDate: Date | null }
+
+function parseEventDate(value?: string | null): Date | null {
+  if (!value) return null
+
+  const direct = new Date(value)
+  if (!Number.isNaN(direct.getTime())) {
+    return direct
+  }
+
+  const isoLike = new Date(`${value}T00:00:00`)
+  return Number.isNaN(isoLike.getTime()) ? null : isoLike
+}
+
+function splitEvents(events: EventRecord[]) {
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+
+  const upcomingEvents: CalendarEvent[] = []
+  const pastEvents: CalendarEvent[] = []
+
+  events.forEach((event) => {
+    const eventDate = parseEventDate(event.date)
+    const enriched: CalendarEvent = { ...event, eventDate }
+
+    if (!eventDate || eventDate >= today) {
+      upcomingEvents.push(enriched)
+    } else {
+      pastEvents.push(enriched)
+    }
+  })
+
+  const sortAscending = (a: CalendarEvent, b: CalendarEvent) => {
+    const aTime = a.eventDate?.getTime() ?? Number.POSITIVE_INFINITY
+    const bTime = b.eventDate?.getTime() ?? Number.POSITIVE_INFINITY
+    return aTime - bTime
+  }
+
+  const sortDescending = (a: CalendarEvent, b: CalendarEvent) => {
+    const aTime = a.eventDate?.getTime() ?? Number.NEGATIVE_INFINITY
+    const bTime = b.eventDate?.getTime() ?? Number.NEGATIVE_INFINITY
+    return bTime - aTime
+  }
+
+  upcomingEvents.sort(sortAscending)
+  pastEvents.sort(sortDescending)
+
+  return { upcomingEvents, pastEvents }
+}
+
+function EventCard({ event }: { event: CalendarEvent }) {
+  return (
+    <div className="bg-white rounded-xl overflow-hidden border border-[var(--green)]/15 hover:border-[var(--gold)] transition-colors shadow-sm">
+      <div className="flex flex-col md:flex-row">
+        <div className="md:w-28 bg-[var(--green)] text-white p-4 md:p-6 flex flex-row md:flex-col items-center justify-center gap-2 md:gap-0 text-center">
+          <span className="text-sm font-semibold tracking-wide uppercase">{event.month}</span>
+          <span className="text-2xl md:text-3xl font-bold">{event.day}</span>
+        </div>
+        <div className="flex-1 p-5 md:p-6">
+          <div className="flex flex-wrap items-center gap-2 mb-2">
+            <span
+              className={`text-xs px-2.5 py-1 rounded-full font-semibold ${event.eventType === "ceremony"
+                ? "bg-[var(--gold)] text-[var(--green)]"
+                : event.eventType === "meeting"
+                  ? "bg-[var(--green)] text-white"
+                  : "bg-[var(--green)]/10 text-[var(--green)]"
+                }`}
+            >
+              {event.eventType === "ceremony"
+                ? "Special Ceremony"
+                : event.eventType === "meeting"
+                  ? "Meeting"
+                  : "Community Event"}
+            </span>
+          </div>
+          <h3 className="text-xl font-bold font-serif text-[var(--green)] mb-2">{event.title}</h3>
+          <p className="text-[var(--green)]/70 mb-3">{event.description}</p>
+          <div className="flex flex-wrap gap-4 text-sm text-[var(--green)]/60">
+            <span className="flex items-center gap-1.5">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              {event.time}
+            </span>
+            <span className="flex items-center gap-1.5">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                />
+              </svg>
+              {event.location}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 async function getEvents() {
   try {
+    await ensureDefaultEvents()
+
     const events = await db.event.findMany({
       orderBy: {
         date: "asc",
@@ -26,6 +144,7 @@ async function getEvents() {
 
 export default async function CalendarPage() {
   const events = await getEvents()
+  const { upcomingEvents, pastEvents } = splitEvents(events)
 
   return (
     <main className="pt-24 pb-20 bg-[var(--cream)] min-h-screen">
@@ -47,7 +166,7 @@ export default async function CalendarPage() {
           </div>
 
           <div className="space-y-6">
-            {events.length === 0 ? (
+            {upcomingEvents.length === 0 ? (
               <div className="text-center py-12">
                 <svg className="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -56,71 +175,30 @@ export default async function CalendarPage() {
                 <p className="text-gray-400">Check back soon for new events!</p>
               </div>
             ) : (
-              events.map((event) => (
-                <div
-                  key={event.id}
-                  className="bg-white rounded-xl overflow-hidden border border-[var(--green)]/15 hover:border-[var(--gold)] transition-colors shadow-sm"
-                >
-                  <div className="flex flex-col md:flex-row">
-                    <div className="md:w-28 bg-[var(--green)] text-white p-4 md:p-6 flex flex-row md:flex-col items-center justify-center gap-2 md:gap-0 text-center">
-                      <span className="text-sm font-semibold tracking-wide uppercase">{event.month}</span>
-                      <span className="text-2xl md:text-3xl font-bold">{event.day}</span>
-                    </div>
-                    <div className="flex-1 p-5 md:p-6">
-                      <div className="flex flex-wrap items-center gap-2 mb-2">
-                        <span
-                          className={`text-xs px-2.5 py-1 rounded-full font-semibold ${event.eventType === "ceremony"
-                            ? "bg-[var(--gold)] text-[var(--green)]"
-                            : event.eventType === "meeting"
-                              ? "bg-[var(--green)] text-white"
-                              : "bg-[var(--green)]/10 text-[var(--green)]"
-                            }`}
-                        >
-                          {event.eventType === "ceremony"
-                            ? "Special Ceremony"
-                            : event.eventType === "meeting"
-                              ? "Meeting"
-                              : "Community Event"}
-                        </span>
-                      </div>
-                      <h3 className="text-xl font-bold font-serif text-[var(--green)] mb-2">{event.title}</h3>
-                      <p className="text-[var(--green)]/70 mb-3">{event.description}</p>
-                      <div className="flex flex-wrap gap-4 text-sm text-[var(--green)]/60">
-                        <span className="flex items-center gap-1.5">
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                            />
-                          </svg>
-                          {event.time}
-                        </span>
-                        <span className="flex items-center gap-1.5">
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                            />
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                            />
-                          </svg>
-                          {event.location}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))
+              upcomingEvents.map((event) => <EventCard key={event.id} event={event} />)
             )}
           </div>
+        </section>
+
+        {/* Past Events */}
+        <section className="bg-white rounded-2xl p-8 md:p-12 border border-[var(--border)] shadow-sm mt-12">
+          <div className="text-center mb-10">
+            <span className="hof-section-label">Looking Back</span>
+            <h2 className="text-3xl font-bold font-serif text-[var(--green)]">Past Events</h2>
+          </div>
+
+          {pastEvents.length === 0 ? (
+            <div className="text-center py-8 text-gray-500">
+              <p className="text-lg">No past events to show yet.</p>
+              <p className="text-gray-400">Check again after our next gathering.</p>
+            </div>
+          ) : (
+            <div className="space-y-6">
+              {pastEvents.map((event) => (
+                <EventCard key={event.id} event={event} />
+              ))}
+            </div>
+          )}
         </section>
 
         {/* Newsletter CTA */}
