@@ -415,6 +415,9 @@ img {
 .timeline {
   position: relative;
   padding-left: 2rem;
+  max-width: 36rem;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .timeline::before {
