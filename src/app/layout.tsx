@@ -75,7 +75,6 @@ export default function RootLayout({
       <body className={`${inter.variable} ${playfair.variable} font-sans`}>
         <div className="flex min-h-screen flex-col">
           <Header />
-          <div className="h-20" aria-hidden="true" />
           <main className="flex-grow">{children}</main>
           <Footer />
         </div>
