@@ -15,6 +15,7 @@ export default function AdminDashboard() {
         if (typeof window !== "undefined") {
             const auth = sessionStorage.getItem("admin_authenticated");
             if (auth === "true") {
+                // eslint-disable-next-line react-hooks/set-state-in-effect
                 setIsAuthenticated(true);
             }
             setIsLoading(false);
@@ -115,6 +116,24 @@ export default function AdminDashboard() {
                     </p>
                     <span className="text-sm font-medium text-[var(--primary-700)]">Go to Event Manager →</span>
                     </Link>
+
+                <Link
+                    href="/admin/historical-sketches"
+                    className="flex flex-col gap-3 p-6 bg-white rounded-xl border shadow-sm hover:shadow-md transition-shadow"
+                >
+                    <div className="flex items-center justify-between">
+                        <h2 className="text-xl font-semibold text-gray-900">Historical Sketches</h2>
+                        <div className="w-10 h-10 rounded-full bg-emerald-50 flex items-center justify-center">
+                            <svg className="w-5 h-5 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                            </svg>
+                        </div>
+                    </div>
+                    <p className="text-gray-600">
+                        Upload new PDF stories or edit the ones that appear under Historical Sketches.
+                    </p>
+                    <span className="text-sm font-medium text-[var(--primary-700)]">Manage Sketches →</span>
+                </Link>
 
                 <Link
                     href="/calendar"

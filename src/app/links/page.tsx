@@ -14,6 +14,11 @@ const links = [
             "Giving Our Past a Future. A dedicated society with archives and a physical location preserving the history of the Old York Road corridor.",
     },
     {
+        title: "NE Philly Hall of Fame",
+        url: "https://nephillyhalloffame.com/",
+        description: "Learn more about impactful people from NE philadelphia",
+    },
+    {
         title: "The Historical Society of Frankford",
         url: "https://www.thehistoricalsocietyoffrankford.org/",
         description: "Collecting and preserving the history of Frankford and Northeast Philadelphia since 1905.",

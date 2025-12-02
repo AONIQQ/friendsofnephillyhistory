@@ -96,6 +96,14 @@ export default function AboutPage() {
                             <p className="font-serif text-xl">Old York Road Historical Society – Giving Our Past a Future</p>
                         </Link>
                         <Link
+                            href="https://nephillyhalloffame.com/"
+                            target="_blank"
+                            rel="noreferrer"
+                            className="block bg-white/10 p-6 rounded-xl backdrop-blur-sm hover:bg-white/20 transition-colors"
+                        >
+                            <p className="font-serif text-xl">Learn more about impactful people from NE philadelphia</p>
+                        </Link>
+                        <Link
                             href="https://www.thehistoricalsocietyoffrankford.org/"
                             target="_blank"
                             rel="noreferrer"
