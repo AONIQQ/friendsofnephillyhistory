@@ -154,15 +154,7 @@ export default function AdminDashboard() {
                     </Link>
             </div>
 
-            <div className="bg-white rounded-xl border shadow-sm p-6">
-                <h2 className="text-lg font-semibold text-gray-900 mb-2">Need something else?</h2>
-                <p className="text-gray-600 mb-4">
-                    This admin area only contains tools that power the current Friends of Northeast Philadelphia History website. Older Hall of Fame modules (inductees, nominations, voting, gallery uploads, donations, etc.) have been removed to keep things simple.
-                </p>
-                <p className="text-sm text-gray-500">
-                    Reach out to <a href={`mailto:${siteConfig.contact.email}`} className="text-[var(--primary-700)] hover:underline">{siteConfig.contact.email}</a> if you need additional admin features added in the future.
-                </p>
-            </div>
+        
         </div>
     );
 }
